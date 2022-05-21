@@ -598,9 +598,23 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Initialize the bean instance.
+		//暴露的bean
 		Object exposedObject = bean;
 		try {
+			/**
+			 * populateBean()
+			 * 	执行前：bean的属性都是默认值
+			 * 	执行后：bean的属性会被填充
+			 */
 			populateBean(beanName, mbd, instanceWrapper);
+			/**
+			 * 填充后，仍需调用initializeBean方法
+			 * 1、内部调用invokeAwareMethod
+			 * 2、完成Aware方法的调用
+			 * 3、applyBeanPostProcessorsBeforeInitialization()
+			 * 4、invokeInitMethods()
+			 * 5、applyBeanPostProcessorsAfterInitialization()
+			 */
 			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		}
 		catch (Throwable ex) {
@@ -642,6 +656,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		// Register bean as disposable.
 		try {
+			//注册销毁的方法
 			registerDisposableBeanIfNecessary(beanName, bean, mbd);
 		}
 		catch (BeanDefinitionValidationException ex) {

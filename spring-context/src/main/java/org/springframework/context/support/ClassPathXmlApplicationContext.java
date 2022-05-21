@@ -139,6 +139,10 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 			throws BeansException {
 
 		super(parent);
+		/**
+		 * 1、将传入的XML配置路径存储，configLocations存放配置文件的list
+		 * 2、enviroment存放所有系统的环境变量
+		 */
 		setConfigLocations(configLocations);
 		if (refresh) {
 			refresh();

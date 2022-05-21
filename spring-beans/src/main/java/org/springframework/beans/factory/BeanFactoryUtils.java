@@ -83,6 +83,8 @@ public abstract class BeanFactoryUtils {
 		if (!name.startsWith(BeanFactory.FACTORY_BEAN_PREFIX)) {
 			return name;
 		}
+		//// 循环去掉前面所有的 & 符号
+		//去掉"&"符号，获取真实的bean name。如：name从"&MyBean"变成"MyBean"
 		return transformedBeanNameCache.computeIfAbsent(name, beanName -> {
 			do {
 				beanName = beanName.substring(BeanFactory.FACTORY_BEAN_PREFIX.length());

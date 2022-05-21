@@ -55,14 +55,16 @@ public final class SpringProperties {
 
 	private static final Properties localProperties = new Properties();
 
-
+	//static块加载spring.properties文件，将属性全部放到localProperties
 	static {
 		try {
 			ClassLoader cl = SpringProperties.class.getClassLoader();
+			//读取spring.properties参数
 			URL url = (cl != null ? cl.getResource(PROPERTIES_RESOURCE_LOCATION) :
 					ClassLoader.getSystemResource(PROPERTIES_RESOURCE_LOCATION));
 			if (url != null) {
 				try (InputStream is = url.openStream()) {
+					//存入localProperties中，本质就是增强的HashMap
 					localProperties.load(is);
 				}
 			}

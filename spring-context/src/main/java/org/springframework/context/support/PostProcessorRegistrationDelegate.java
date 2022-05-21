@@ -79,18 +79,26 @@ final class PostProcessorRegistrationDelegate {
 		// https://github.com/spring-projects/spring-framework/issues?q=PostProcessorRegistrationDelegate+is%3Aclosed+label%3A%22status%3A+declined%22
 
 		// Invoke BeanDefinitionRegistryPostProcessors first, if any.
+		//将已经执行过的BeanFactoryPostProcessor存储在processedBeans，防止重复执行
 		Set<String> processedBeans = new HashSet<>();
-
+		// 此处条件成立，BeanFactory类型为DefaultListableBeanFactory，而DefaultListableBeanFactory实现了BeanDefinitionRegistry接口
 		if (beanFactory instanceof BeanDefinitionRegistry registry) {
+			// 用来存放BeanFactoryPostProcessor对象
 			List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
+			// 用来存放BeanDefinitionRegistryPostProcessor对象
+			// 方便统一执行实现了BeanDefinitionRegistryPostProcessor接口父类的方法
 			List<BeanDefinitionRegistryPostProcessor> registryProcessors = new ArrayList<>();
-
+			// 处理自定义的BeanFactoryPostProcessor,将BeanDefinitionRegistryPostProcessor与BeanFactoryPostProcessor区分开
 			for (BeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {
+				// 如果为BeanDefinitionRegistryPostProcessor类型
 				if (postProcessor instanceof BeanDefinitionRegistryPostProcessor registryProcessor) {
+					//如果是BeanDefinitionRegistryPostProcessor类型，直接执行postProcessBeanDefinitionRegistry方法
 					registryProcessor.postProcessBeanDefinitionRegistry(registry);
 					registryProcessors.add(registryProcessor);
 				}
 				else {
+					// 如果不是BeanDefinitionRegistryPostProcessor类型
+					// 则将外部集合中的BeanFactoryPostProcessor存放到regularPostProcessors用于后续一起执行
 					regularPostProcessors.add(postProcessor);
 				}
 			}

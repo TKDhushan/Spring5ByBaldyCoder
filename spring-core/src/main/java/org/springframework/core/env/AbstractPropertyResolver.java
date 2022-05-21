@@ -140,9 +140,14 @@ public abstract class AbstractPropertyResolver implements ConfigurablePropertyRe
 		Collections.addAll(this.requiredProperties, requiredProperties);
 	}
 
+	/**
+	 * 检查必须存在的环境变量是否都存在
+	 */
 	@Override
 	public void validateRequiredProperties() {
 		MissingRequiredPropertiesException ex = new MissingRequiredPropertiesException();
+		//检查requireProperties是否有启动必检项，需要调用setRequiredProperties方法传入，否则为空
+		//MissingRequiredPropertiesException: The following properties were declared as required but could not be resolved: [环境变量key]
 		for (String key : this.requiredProperties) {
 			if (this.getProperty(key) == null) {
 				ex.addMissingRequiredProperty(key);

@@ -116,6 +116,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * This implementation performs an actual refresh of this context's underlying
 	 * bean factory, shutting down the previous bean factory (if any) and
 	 * initializing a fresh bean factory for the next phase of the context's lifecycle.
+	 * 此方法刷新BeanFactory默认一定会重新创建一个
 	 */
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
@@ -124,9 +125,13 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			closeBeanFactory();
 		}
 		try {
+			//DefaultListableBeanFactory 是 BeanDefinitionRegistry接口的实现
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
 			beanFactory.setSerializationId(getId());
+			//为beanFacory设置可重写、覆盖的属性
 			customizeBeanFactory(beanFactory);
+			//内部有诸多重载的loadBeanDefinitions，完成配置文件的解析
+			//创建出BeanDefinitionMap，放在beanFactory里（DefaultListableBeanFactory）key就是类的名字，类对应的BeanDefinition对象作为value
 			loadBeanDefinitions(beanFactory);
 			this.beanFactory = beanFactory;
 		}
@@ -194,6 +199,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowRawInjectionDespiteWrapping
 	 */
 	protected DefaultListableBeanFactory createBeanFactory() {
+		//getInternalParentBeanFactory() 为空
 		return new DefaultListableBeanFactory(getInternalParentBeanFactory());
 	}
 
@@ -212,9 +218,11 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * @see DefaultListableBeanFactory#setAllowEagerClassLoading
 	 */
 	protected void customizeBeanFactory(DefaultListableBeanFactory beanFactory) {
+		//xml中配置的replace-method
 		if (this.allowBeanDefinitionOverriding != null) {
 			beanFactory.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
 		}
+		//xml中配置的look-up method
 		if (this.allowCircularReferences != null) {
 			beanFactory.setAllowCircularReferences(this.allowCircularReferences);
 		}

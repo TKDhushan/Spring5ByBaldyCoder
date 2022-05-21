@@ -777,10 +777,12 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	public void registerResolvableDependency(Class<?> dependencyType, @Nullable Object autowiredValue) {
 		Assert.notNull(dependencyType, "Dependency type must not be null");
 		if (autowiredValue != null) {
+			//必须autowiredValue 是 dependencyType的子类
 			if (!(autowiredValue instanceof ObjectFactory || dependencyType.isInstance(autowiredValue))) {
 				throw new IllegalArgumentException("Value [" + autowiredValue +
 						"] does not implement specified dependency type [" + dependencyType.getName() + "]");
 			}
+			//resolvableDependencies 的事一个Map，用于接收class 与 实现对象
 			this.resolvableDependencies.put(dependencyType, autowiredValue);
 		}
 	}
@@ -912,12 +914,16 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 		// Iterate over a copy to allow for init methods which in turn register new bean definitions.
 		// While this may not be part of the regular factory bootstrap, it does otherwise work fine.
+		//获取beanNames。其中beanDefinitionNames是初始化过程中所有的bean
 		List<String> beanNames = new ArrayList<>(this.beanDefinitionNames);
 
 		// Trigger initialization of all non-lazy singleton beans...
 		for (String beanName : beanNames) {
+			//对有父子关系的Bean进行合并，并返回RootBeanDefinition
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
+			//基于xml注解的配置信息进行判断
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
+				//是否是factoryBean类型的Bean
 				if (isFactoryBean(beanName)) {
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
 					if (bean instanceof SmartFactoryBean<?> smartFactoryBean && smartFactoryBean.isEagerInit()) {
@@ -925,6 +931,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					}
 				}
 				else {
+					//核心的方法
 					getBean(beanName);
 				}
 			}
