@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean id="user" class="org.springframework.demo.entity.User">
+		<property name="age" value="18"/>
+		<property name="name" value="老毛"/>
+	</bean>
+
+	<bean id="superUser" class="org.springframework.demo.entity.SuperUser" parent="user" primary="true">
+		<property name="addr" value="北京"/>
+	</bean>
+
+	<bean id="objectFactory" class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
+		<property name="targetBeanName" value="user"/>
+	</bean>
+	<!-- 循环引用 -->
+	<bean id="a" class="org.springframework.demo.entity.A" scope="singleton">
+		<property name="b" ref="b"/>
+	</bean>
+
+	<bean id="b" class="org.springframework.demo.entity.B" scope="singleton">
+		<property name="c" ref="c"/>
+	</bean>
+
+	<bean id="c" class="org.springframework.demo.entity.C" scope="singleton">
+		<property name="a" ref="a"/>
+	</bean>
+</beans>
