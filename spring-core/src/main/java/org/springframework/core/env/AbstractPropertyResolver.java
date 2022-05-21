@@ -210,8 +210,10 @@ public abstract class AbstractPropertyResolver implements ConfigurablePropertyRe
 	@Override
 	public String resolveRequiredPlaceholders(String text) throws IllegalArgumentException {
 		if (this.strictHelper == null) {
+			//生成占位符封装信息
 			this.strictHelper = createPlaceholderHelper(false);
 		}
+		//测试案例此时返回：META-INF/spring.xml  此段主要作用是为了防止文件名类似：spring-${abc}.xml
 		return doResolvePlaceholders(text, this.strictHelper);
 	}
 
@@ -241,6 +243,7 @@ public abstract class AbstractPropertyResolver implements ConfigurablePropertyRe
 	}
 
 	private String doResolvePlaceholders(String text, PropertyPlaceholderHelper helper) {
+		//this : todo 补充this的实现
 		return helper.replacePlaceholders(text, this::getPropertyAsRawString);
 	}
 

@@ -223,6 +223,10 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 */
 	public PathMatchingResourcePatternResolver(ResourceLoader resourceLoader) {
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
+		/**
+		 * 1、案例中以ClassPathXmlApplicationContext对象作为解析xml的类，此处resourceLoader即为此对象，外围传入this
+		 * 2、ClassPathXmlApplicationContext是ResourceLoader的子类
+		 */
 		this.resourceLoader = resourceLoader;
 	}
 

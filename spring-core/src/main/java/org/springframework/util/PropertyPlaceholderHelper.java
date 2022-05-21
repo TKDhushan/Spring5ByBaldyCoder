@@ -85,19 +85,27 @@ public class PropertyPlaceholderHelper {
 	 */
 	public PropertyPlaceholderHelper(String placeholderPrefix, String placeholderSuffix,
 			@Nullable String valueSeparator, boolean ignoreUnresolvablePlaceholders) {
-
+		/**
+		 * 以测试案例xml形式上送为例
+		 * 1、wellKnownSimplePrefixes是非el表达式的占位符，放在类static里面执行
+		 * 	  如：[、]、{、}、(、)
+		 * 2、形参placeholderPrefix = ${   placeholderSuffix = }
+		 */
 		Assert.notNull(placeholderPrefix, "'placeholderPrefix' must not be null");
 		Assert.notNull(placeholderSuffix, "'placeholderSuffix' must not be null");
 		this.placeholderPrefix = placeholderPrefix;
 		this.placeholderSuffix = placeholderSuffix;
 		String simplePrefixForSuffix = wellKnownSimplePrefixes.get(this.placeholderSuffix);
+		//判断表达式的占位符 符号
 		if (simplePrefixForSuffix != null && this.placeholderPrefix.endsWith(simplePrefixForSuffix)) {
 			this.simplePrefix = simplePrefixForSuffix;
 		}
 		else {
 			this.simplePrefix = this.placeholderPrefix;
 		}
+		//valueSeparator = :
 		this.valueSeparator = valueSeparator;
+		//ignoreUnresolvablePlaceholders = false
 		this.ignoreUnresolvablePlaceholders = ignoreUnresolvablePlaceholders;
 	}
 
@@ -128,12 +136,12 @@ public class PropertyPlaceholderHelper {
 
 	protected String parseStringValue(
 			String value, PlaceholderResolver placeholderResolver, @Nullable Set<String> visitedPlaceholders) {
-
+		//以测试案例为例： 判断META-INF/spring.xml 是否包含${
 		int startIndex = value.indexOf(this.placeholderPrefix);
 		if (startIndex == -1) {
 			return value;
 		}
-
+		//因测试时文件名String没有采用spring-${abc}.xml的形式，所以暂未步进到如下代码
 		StringBuilder result = new StringBuilder(value);
 		while (startIndex != -1) {
 			int endIndex = findPlaceholderEndIndex(result, startIndex);
