@@ -162,6 +162,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * Set the validation mode to use by name. Defaults to {@link #VALIDATION_AUTO}.
 	 * @see #setValidationMode
 	 */
+	//可以调用此方法修改ValidationMode值
 	public void setValidationModeName(String validationModeName) {
 		setValidationMode(constants.asNumber(validationModeName).intValue());
 	}
@@ -180,6 +181,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * Return the validation mode to use.
 	 */
 	public int getValidationMode() {
+		//默认是XmlValidationModeDetector的字典1
 		return this.validationMode;
 	}
 
@@ -322,20 +324,25 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		if (logger.isTraceEnabled()) {
 			logger.trace("Loading XML bean definitions from " + encodedResource);
 		}
-
+		//通过属性来记录已经加载的资源
+		//ThreadLocal的线程变量，案例调入为null
 		Set<EncodedResource> currentResources = this.resourcesCurrentlyBeingLoaded.get();
-
+		//加入上一步的encodedResource
 		if (!currentResources.add(encodedResource)) {
 			throw new BeanDefinitionStoreException(
 					"Detected cyclic loading of " + encodedResource + " - check your import definitions!");
 		}
-
+		//从encodedResource中获取已经封装的Resource对象并在此从Resource中获取其中的inputStream
 		try (InputStream inputStream = encodedResource.getResource().getInputStream()) {
+			//创建一个字节流
 			InputSource inputSource = new InputSource(inputStream);
 			if (encodedResource.getEncoding() != null) {
 				inputSource.setEncoding(encodedResource.getEncoding());
 			}
-			//核心方法
+			/**
+			 * 核心方法
+			 * 配置文件经历：String[] -> String -> Resource[] -> resource的重载调用
+			 */
 			return doLoadBeanDefinitions(inputSource, encodedResource.getResource());
 		}
 		catch (IOException ex) {
@@ -388,8 +395,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 			throws BeanDefinitionStoreException {
 
 		try {
-			//Document Object Model，文档对象模型解析XML
+			//Document Object Model，文档对象模型解析XML；解析过程是由documentLoader完成的
 			Document doc = doLoadDocument(inputSource, resource);
+			//将Document结构化的Node节点信息，封装厂BeanDefinition对象
 			int count = registerBeanDefinitions(doc, resource);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Loaded " + count + " bean definitions from " + resource);
@@ -444,10 +452,17 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see #detectValidationMode
 	 */
 	protected int getValidationModeForResource(Resource resource) {
+		/**
+		 * 若在程序加载时有配置验证模式，以配置为准
+		 * 若没有配置，则自动检测
+		 */
+		//validationMode值是XmlValidationModeDetector的字典
 		int validationModeToUse = getValidationMode();
+		//如果手动制定了验证模式，则使用指定的验证模式
 		if (validationModeToUse != VALIDATION_AUTO) {
 			return validationModeToUse;
 		}
+		//如果没有指定则使用自动检测
 		int detectedMode = detectValidationMode(resource);
 		if (detectedMode != VALIDATION_AUTO) {
 			return detectedMode;
@@ -486,6 +501,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		}
 
 		try {
+			//返回当前配置文件是何种格式的如：DTD、XSD
 			return this.validationModeDetector.detectValidationMode(inputStream);
 		}
 		catch (IOException ex) {

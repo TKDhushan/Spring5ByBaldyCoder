@@ -191,6 +191,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 
 	@Override
 	public int loadBeanDefinitions(String location) throws BeanDefinitionStoreException {
+		//首次启动类调用的时候，actualResources参数为null
 		return loadBeanDefinitions(location, null);
 	}
 
@@ -210,15 +211,17 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 	 * @see #loadBeanDefinitions(org.springframework.core.io.Resource[])
 	 */
 	public int loadBeanDefinitions(String location, @Nullable Set<Resource> actualResources) throws BeanDefinitionStoreException {
+		//getResourceLoader() 返回的就是classPathXmlApplicationContext对象
 		ResourceLoader resourceLoader = getResourceLoader();
 		if (resourceLoader == null) {
 			throw new BeanDefinitionStoreException(
 					"Cannot load bean definitions from location [" + location + "]: no ResourceLoader available");
 		}
-
+		//classPathXmlApplicationContext就是ResourcePatternResolver的子类
 		if (resourceLoader instanceof ResourcePatternResolver) {
 			// Resource pattern matching available.
 			try {
+				//调用DefaultResourceLoader的getResource完成局答题的Resource定位
 				Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
 				int count = loadBeanDefinitions(resources);
 				if (actualResources != null) {
@@ -252,10 +255,11 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 	public int loadBeanDefinitions(String... locations) throws BeanDefinitionStoreException {
 		Assert.notNull(locations, "Location array must not be null");
 		int count = 0;
-		//会有多个XML配置文件
+		//会有多个XML配置文件，循环处理
 		for (String location : locations) {
 			count += loadBeanDefinitions(location);
 		}
+		//返回读取的配置文件个数
 		return count;
 	}
 

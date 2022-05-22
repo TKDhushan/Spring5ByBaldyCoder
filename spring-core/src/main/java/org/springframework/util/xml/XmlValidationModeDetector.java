@@ -89,6 +89,7 @@ public class XmlValidationModeDetector {
 	 * @see #VALIDATION_XSD
 	 */
 	public int detectValidationMode(InputStream inputStream) throws IOException {
+		//是否处于注释标签内
 		this.inComment = false;
 
 		// Peek into the file to look for DOCTYPE.
@@ -96,19 +97,24 @@ public class XmlValidationModeDetector {
 			boolean isDtdValidated = false;
 			String content;
 			while ((content = reader.readLine()) != null) {
+				//当前行信息提交给该方法，检验是否是注释行？返回非注释的代码String
 				content = consumeCommentTokens(content);
+				// 如果读取的行是空或者注释则略过
 				if (!StringUtils.hasText(content)) {
 					continue;
 				}
+				//content非注释代码中是否包含DOCTYPE字符串
 				if (hasDoctype(content)) {
 					isDtdValidated = true;
 					break;
 				}
+				// 读取<开始符号 没太懂
 				if (hasOpeningTag(content)) {
 					// End of meaningful data...
 					break;
 				}
 			}
+			//返回该配置文件是DTD类型的还是XSD类型的
 			return (isDtdValidated ? VALIDATION_DTD : VALIDATION_XSD);
 		}
 		catch (CharConversionException ex) {
@@ -148,6 +154,11 @@ public class XmlValidationModeDetector {
 	 * <p>This method takes the current "in comment" parsing state into account.
 	 */
 	private String consumeCommentTokens(String line) {
+		/**
+		 * 1、当前行是否包含 <!--，如果没有，则原封不动返回line
+		 * 2、调用consume方法获取其余当前行代码注释情况
+		 * 3、最终拼接非注释的该行代码，病房
+		 */
 		int indexOfStartComment = line.indexOf(START_COMMENT);
 		if (indexOfStartComment == -1 && !line.contains(END_COMMENT)) {
 			return line;
@@ -157,10 +168,12 @@ public class XmlValidationModeDetector {
 		String currLine = line;
 		if (!this.inComment && (indexOfStartComment >= 0)) {
 			result = line.substring(0, indexOfStartComment);
+			//截取<!-- 之后的字符串，后面还要递归判断防止嵌套？或防止-->后面有非注释代码
 			currLine = line.substring(indexOfStartComment);
 		}
-
+		//consume返回是否currLine包含非注释代码
 		if ((currLine = consume(currLine)) != null) {
+			//递归调用
 			result += consumeCommentTokens(currLine);
 		}
 		return result;

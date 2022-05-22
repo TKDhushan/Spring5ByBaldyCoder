@@ -59,6 +59,7 @@ public class EncodedResource implements InputStreamSource {
 	 * @param resource the {@code Resource} to hold (never {@code null})
 	 */
 	public EncodedResource(Resource resource) {
+		//按照指定的charset对Resource类进行一定的包装，没有太大实际意义
 		this(resource, null, null);
 	}
 
