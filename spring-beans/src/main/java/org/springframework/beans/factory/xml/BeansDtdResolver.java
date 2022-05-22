@@ -43,9 +43,9 @@ import org.springframework.lang.Nullable;
  * @see ResourceEntityResolver
  */
 public class BeansDtdResolver implements EntityResolver {
-
+	//指明类型为dtd
 	private static final String DTD_EXTENSION = ".dtd";
-
+	//指明文件名
 	private static final String DTD_NAME = "spring-beans";
 
 	private static final Log logger = LogFactory.getLog(BeansDtdResolver.class);

@@ -84,6 +84,8 @@ public class PluggableSchemaResolver implements EntityResolver {
 	 * @see PropertiesLoaderUtils#loadAllProperties(String, ClassLoader)
 	 */
 	public PluggableSchemaResolver(@Nullable ClassLoader classLoader) {
+		//未显示调用只是赋值了schemaMappingsLocation路径
+		//schemaMapping对象无实际值
 		this.classLoader = classLoader;
 		this.schemaMappingsLocation = DEFAULT_SCHEMA_MAPPINGS_LOCATION;
 	}
@@ -113,6 +115,7 @@ public class PluggableSchemaResolver implements EntityResolver {
 		}
 
 		if (systemId != null) {
+			//调用的getSchemaMappings方法，此方法为懒加载，idea跟交易会回显
 			String resourceLocation = getSchemaMappings().get(systemId);
 			if (resourceLocation == null && systemId.startsWith("https:")) {
 				// Retrieve canonical http schema mapping even for https declaration
@@ -143,6 +146,7 @@ public class PluggableSchemaResolver implements EntityResolver {
 
 	/**
 	 * Load the specified schema mappings lazily.
+	 * 方法为懒加载，但是debug的时候ide会自动调用toString(),内部会调用getSchemaMappings，所以懒加载不生效
 	 */
 	private Map<String, String> getSchemaMappings() {
 		Map<String, String> schemaMappings = this.schemaMappings;
@@ -173,7 +177,7 @@ public class PluggableSchemaResolver implements EntityResolver {
 		return schemaMappings;
 	}
 
-
+	//ide在debug时会自动调用toString(),触发懒加载getSchemaMappings方法执行
 	@Override
 	public String toString() {
 		return "EntityResolver using schema mappings " + getSchemaMappings();

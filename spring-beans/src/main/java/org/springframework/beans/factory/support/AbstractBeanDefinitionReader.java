@@ -84,7 +84,10 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 	protected AbstractBeanDefinitionReader(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 		this.registry = registry;
-
+		/**
+		 * 判断registry 即beanFacotry的类型，统一使用resourceLoad接入
+		 * 可以查看AbstractXmlApplicationContext的类继承图
+		 */
 		// Determine ResourceLoader to use.
 		if (this.registry instanceof ResourceLoader) {
 			this.resourceLoader = (ResourceLoader) this.registry;

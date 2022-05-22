@@ -59,7 +59,18 @@ public class DelegatingEntityResolver implements EntityResolver {
 	 * (can be {@code null}) to use the default ClassLoader)
 	 */
 	public DelegatingEntityResolver(@Nullable ClassLoader classLoader) {
+		/**
+		 * 1、BeansDtdResolver类是实现sax解析类EntityResolver的子类，实现resolveEntity方法
+		 */
+		//解析类路径下spring-beans.dtd文件
 		this.dtdResolver = new BeansDtdResolver();
+		/**
+		 * 解析类路径下的 META-INF/spring.schemas
+		 * PluggableSchemaResolver：
+		 * 	1、执行完下面一行代码，schemaResolver对象的schemaMapping属性被赋值了，但类内并未显示调用
+		 * 	2、原因是debug的时候ide会自动调用toString方法，来展示变量信息
+		 * 	3、toString发放内部调用了：getSchemaMappings方法触发懒加载
+		 */
 		this.schemaResolver = new PluggableSchemaResolver(classLoader);
 	}
 

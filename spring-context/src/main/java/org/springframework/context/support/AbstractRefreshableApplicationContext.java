@@ -120,18 +120,31 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 */
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
+		//在此beanFacotry实例化前，已经存在其他beanFacotry，则销毁beanFactory
 		if (hasBeanFactory()) {
 			destroyBeans();
 			closeBeanFactory();
 		}
+		//创建一个新的beanFactory
 		try {
-			//DefaultListableBeanFactory 是 BeanDefinitionRegistry接口的实现
+			//DefaultListableBeanFactory 是 BeanDefinitionRegistry接口的实现，诸多属性均为默认值
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
+			//为序列号指定ID，可以从id反序列化到beanFacotry对象
 			beanFactory.setSerializationId(getId());
-			//为beanFacory设置可重写、覆盖的属性
+			/**
+			 * 为beanFacory设置相关属性（设置可重写、覆盖的属性)
+			 * 1、针对 lookup-method 等两个不常用的属性
+			 * 2、如果需要调整，可以重写customizeBeanFactory方法，设置为false
+			 * 		allowBeanDefinitionOverriding
+			 * 		setAllowCircularReferences
+			 */
 			customizeBeanFactory(beanFactory);
-			//内部有诸多重载的loadBeanDefinitions，完成配置文件的解析
-			//创建出BeanDefinitionMap，放在beanFactory里（DefaultListableBeanFactory）key就是类的名字，类对应的BeanDefinition对象作为value
+			/**
+			 * 内部有诸多重载的loadBeanDefinitions，完成配置文件的解析
+			 * 创建出BeanDefinitionMap，放在beanFactory里（DefaultListableBeanFactory）key就是类的名字，类对应的BeanDefinition对象作为value
+			 * 本质即为初始化documentReader，并进行XML文件读取、解析
+			 * 此处传递beanFactory是因为配置文件全部存储于这个对象上
+			 */
 			loadBeanDefinitions(beanFactory);
 			this.beanFactory = beanFactory;
 		}

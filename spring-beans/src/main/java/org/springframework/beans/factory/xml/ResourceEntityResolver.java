@@ -66,6 +66,7 @@ public class ResourceEntityResolver extends DelegatingEntityResolver {
 	 * to load XML entity includes with
 	 */
 	public ResourceEntityResolver(ResourceLoader resourceLoader) {
+		//调用父类完成dtd文件的解析，需要访问类路径下spring-beans.dtd文件、META-INF/spring.schemas文件
 		super(resourceLoader.getClassLoader());
 		this.resourceLoader = resourceLoader;
 	}
