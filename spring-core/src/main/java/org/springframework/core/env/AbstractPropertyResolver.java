@@ -238,6 +238,11 @@ public abstract class AbstractPropertyResolver implements ConfigurablePropertyRe
 	}
 
 	private PropertyPlaceholderHelper createPlaceholderHelper(boolean ignoreUnresolvablePlaceholders) {
+		/**
+		 * placeholderPrefix:占位符的前缀  ${
+		 * placeholderSuffix:占位符的后缀  }
+		 * valueSeparator:分隔符 ：
+		 */
 		return new PropertyPlaceholderHelper(this.placeholderPrefix, this.placeholderSuffix,
 				this.valueSeparator, ignoreUnresolvablePlaceholders);
 	}

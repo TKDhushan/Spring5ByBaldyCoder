@@ -38,7 +38,7 @@ import org.springframework.util.StringUtils;
  */
 public abstract class AbstractRefreshableConfigApplicationContext extends AbstractRefreshableApplicationContext
 		implements BeanNameAware, InitializingBean {
-
+	//用来存储配置文件的路径信息
 	@Nullable
 	private String[] configLocations;
 
@@ -77,6 +77,7 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 		if (locations != null) {
 			Assert.noNullElements(locations, "Config locations must not be null");
 			this.configLocations = new String[locations.length];
+			//函数入口形参是可变参数，可以传入多个配置文件，循环解析
 			for (int i = 0; i < locations.length; i++) {
 				//存储配置文件的classpath
 				this.configLocations[i] = resolvePath(locations[i]).trim();
@@ -125,6 +126,8 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	protected String resolvePath(String path) {
 		/**
 		 * 通过xml方式接入的启动，getEnvironment会创建默认的StandardEnvironment对象
+		 * 1、getEnvironment() 将环境、属性信息加载
+		 * 2、resolveRequiredPlaceholders(path) 将path的占位符解析
 		 */
 		return getEnvironment().resolveRequiredPlaceholders(path);
 	}

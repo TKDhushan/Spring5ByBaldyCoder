@@ -92,10 +92,13 @@ public class StandardEnvironment extends AbstractEnvironment {
 	 * @see #getSystemProperties()
 	 * @see #getSystemEnvironment()
 	 */
+	//重写了父类abstractEnvironment的方法，子类的构造函数是空，由父类构造函数回调子类实现
 	@Override
 	protected void customizePropertySources(MutablePropertySources propertySources) {
+		//系统属性
 		propertySources.addLast(
 				new PropertiesPropertySource(SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME, getSystemProperties()));
+		//系统环境
 		propertySources.addLast(
 				new SystemEnvironmentPropertySource(SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, getSystemEnvironment()));
 	}

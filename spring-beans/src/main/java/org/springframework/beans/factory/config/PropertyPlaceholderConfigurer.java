@@ -141,6 +141,7 @@ public class PropertyPlaceholderConfigurer extends PlaceholderConfigurerSupport 
 	 */
 	@Nullable
 	protected String resolvePlaceholder(String placeholder, Properties props, int systemPropertiesMode) {
+		//根据placeholder 查询加载进来的环境变量与系统属性集合，返回key对应的value
 		String propVal = null;
 		if (systemPropertiesMode == SYSTEM_PROPERTIES_MODE_OVERRIDE) {
 			propVal = resolveSystemProperty(placeholder);

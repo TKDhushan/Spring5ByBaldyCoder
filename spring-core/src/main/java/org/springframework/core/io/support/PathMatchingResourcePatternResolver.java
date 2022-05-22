@@ -202,7 +202,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 
 
 	private final ResourceLoader resourceLoader;
-
+	//创建ant方式的表达式匹配分析器 ant表达式可参见：https://www.jianshu.com/p/189847a7d1c7
 	private PathMatcher pathMatcher = new AntPathMatcher();
 
 

@@ -188,6 +188,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	private ApplicationContext parent;
 
 	/** Environment used by this context. */
+	//后续用来存储环境变量等信息
 	@Nullable
 	private ConfigurableEnvironment environment;
 
@@ -198,12 +199,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	private long startupDate;
 
 	/** Flag that indicates whether this context is currently active. */
+	//当前容器是否被激活
 	private final AtomicBoolean active = new AtomicBoolean();
 
 	/** Flag that indicates whether this context has been closed already. */
+	//是否已关闭
 	private final AtomicBoolean closed = new AtomicBoolean();
 
 	/** Synchronization monitor for the "refresh" and "destroy". */
+	//reflesh()方法论里面的锁，方法体里面的内容同步锁：刷新、销毁
 	private final Object startupShutdownMonitor = new Object();
 
 	/** Reference to the JVM shutdown hook, if registered. */
@@ -505,6 +509,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	@Override
 	public void setParent(@Nullable ApplicationContext parent) {
 		this.parent = parent;
+		//单纯spring框架没有父子容器概念，spring-boot会存在，todo 后续分析spring-boot源码时再加入对应内容
 		if (parent != null) {
 			Environment parentEnvironment = parent.getEnvironment();
 			if (parentEnvironment instanceof ConfigurableEnvironment) {
@@ -554,6 +559,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	@Override
 	public void refresh() throws BeansException, IllegalStateException {
+		//同步监视器
 		synchronized (this.startupShutdownMonitor) {
 			StartupStep contextRefresh = this.applicationStartup.start("spring.context.refresh");
 			/**
@@ -667,8 +673,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void prepareRefresh() {
 		// Switch to active.
+		//容器启动时间
 		this.startupDate = System.currentTimeMillis();
+		//容器关闭标志位
 		this.closed.set(false);
+		//容器激活标志位
 		this.active.set(true);
 
 		if (logger.isDebugEnabled()) {
@@ -679,7 +688,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				logger.debug("Refreshing " + getDisplayName());
 			}
 		}
-		//未实现即为空
+		//未实现即为空，后续子类可以重写
 		// Initialize any placeholder property sources in the context environment.
 		initPropertySources();
 
