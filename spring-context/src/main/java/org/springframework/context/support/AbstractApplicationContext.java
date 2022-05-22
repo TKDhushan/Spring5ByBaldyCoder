@@ -694,15 +694,32 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// Validate that all properties marked as required are resolvable:
 		// see ConfigurablePropertyResolver#setRequiredProperties
-		//默认创建StandardEnvironment，保存的是系统环境变量
+		/**
+		 * 1、默认创建StandardEnvironment，保存的是系统环境变量
+		 * 2、之前已经创建过environment，此处不会再new
+		 * 3、验证需要的属性文件是否都已加载进来
+		 */
 		getEnvironment().validateRequiredProperties();
 
 		// Store pre-refresh ApplicationListeners...
+		/**
+		 * 判断刷新前的应用程序监听器集合是否为空，如果为空，则将监听器添加到此集合中
+		 * earlyApplicationListeners ：预刷新监听器
+		 */
 		if (this.earlyApplicationListeners == null) {
+			/**
+			 * this.applicationListeners在单纯的spring项目中是空
+			 * 在springboot项目中，springboot会加载META-INFO里面的spring.factories监听器
+			 */
 			this.earlyApplicationListeners = new LinkedHashSet<>(this.applicationListeners);
 		}
 		else {
 			// Reset local application listeners to pre-refresh state.
+			/**
+			 * 如果不等于空，则清空运行中的监听器
+			 * applicationListeners：运行中的监听器
+			 * earlyApplicationListeners ：预刷新监听器
+			 */
 			this.applicationListeners.clear();
 			this.applicationListeners.addAll(this.earlyApplicationListeners);
 		}

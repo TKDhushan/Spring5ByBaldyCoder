@@ -150,6 +150,7 @@ public abstract class AbstractPropertyResolver implements ConfigurablePropertyRe
 		//MissingRequiredPropertiesException: The following properties were declared as required but could not be resolved: [环境变量key]
 		for (String key : this.requiredProperties) {
 			if (this.getProperty(key) == null) {
+				//采用LinkedHashSet存储，一次性，有序且不重复的返回错误信息
 				ex.addMissingRequiredProperty(key);
 			}
 		}
