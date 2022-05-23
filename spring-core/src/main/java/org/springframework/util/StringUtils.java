@@ -1128,14 +1128,18 @@ public abstract class StringUtils {
 		if (str == null) {
 			return EMPTY_STRING_ARRAY;
 		}
-
+		//将string 与分隔符封装为StringTokenizer
 		StringTokenizer st = new StringTokenizer(str, delimiters);
 		List<String> tokens = new ArrayList<>();
+		//是否还有delimiters
 		while (st.hasMoreTokens()) {
+			//获取下一个分隔符的位置
 			String token = st.nextToken();
+			//true
 			if (trimTokens) {
 				token = token.trim();
 			}
+			//true
 			if (!ignoreEmptyTokens || token.length() > 0) {
 				tokens.add(token);
 			}

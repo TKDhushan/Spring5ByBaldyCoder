@@ -412,16 +412,22 @@ public class BeanDefinitionParserDelegate {
 	 */
 	@Nullable
 	public BeanDefinitionHolder parseBeanDefinitionElement(Element ele, @Nullable BeanDefinition containingBean) {
+		//id属性值
 		String id = ele.getAttribute(ID_ATTRIBUTE);
+		//name属性值
 		String nameAttr = ele.getAttribute(NAME_ATTRIBUTE);
-
+		//存放bean的别名
 		List<String> aliases = new ArrayList<>();
+		//name属性值存在
 		if (StringUtils.hasLength(nameAttr)) {
+			//
 			String[] nameArr = StringUtils.tokenizeToStringArray(nameAttr, MULTI_VALUE_ATTRIBUTE_DELIMITERS);
+			//赋值到aliases中，后面会使用
 			aliases.addAll(Arrays.asList(nameArr));
 		}
 
 		String beanName = id;
+		//找不到别名，且ID也没有，报错
 		if (!StringUtils.hasText(beanName) && !aliases.isEmpty()) {
 			beanName = aliases.remove(0);
 			if (logger.isTraceEnabled()) {
@@ -429,11 +435,12 @@ public class BeanDefinitionParserDelegate {
 						"' as bean name and " + aliases + " as aliases");
 			}
 		}
-
+		//没太看明白containingBean 是什么？？
 		if (containingBean == null) {
+			//检查beanName是否唯一
 			checkNameUniqueness(beanName, aliases, ele);
 		}
-
+		//调用重载函数进行解析
 		AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
 		if (beanDefinition != null) {
 			if (!StringUtils.hasText(beanName)) {
@@ -484,10 +491,11 @@ public class BeanDefinitionParserDelegate {
 		if (foundName == null) {
 			foundName = CollectionUtils.findFirstMatch(this.usedNames, aliases);
 		}
+		//如果找到了对应的beanName，那么报错
 		if (foundName != null) {
 			error("Bean name '" + foundName + "' is already used in this <beans> element", beanElement);
 		}
-
+		//新的beanName添加到已使用列表中
 		this.usedNames.add(beanName);
 		this.usedNames.addAll(aliases);
 	}
@@ -499,30 +507,38 @@ public class BeanDefinitionParserDelegate {
 	@Nullable
 	public AbstractBeanDefinition parseBeanDefinitionElement(
 			Element ele, String beanName, @Nullable BeanDefinition containingBean) {
-
+		//parseState其实就是一个ArrayDeque的封装
 		this.parseState.push(new BeanEntry(beanName));
 
+		//class属性解析
 		String className = null;
 		if (ele.hasAttribute(CLASS_ATTRIBUTE)) {
 			className = ele.getAttribute(CLASS_ATTRIBUTE).trim();
 		}
+		//parent属性解析
 		String parent = null;
 		if (ele.hasAttribute(PARENT_ATTRIBUTE)) {
 			parent = ele.getAttribute(PARENT_ATTRIBUTE);
 		}
-
+		//执行完parent 与class的解析后，就具备了创建BeanDefinition的条件
 		try {
+			//创建装载bean信息的AbstractBeanDefinition，实现是GenericBeanDefinition，只为对象赋值了反射基础信息
 			AbstractBeanDefinition bd = createBeanDefinition(className, parent);
-
+			//解析bean标签的各种其他属性
 			parseBeanDefinitionAttributes(ele, beanName, containingBean, bd);
+			//设置description信息 标签中：description属性
 			bd.setDescription(DomUtils.getChildElementValueByTagName(ele, DESCRIPTION_ELEMENT));
-
+			//解析元数据
 			parseMetaElements(ele, bd);
+			//解析look-up属性
 			parseLookupOverrideSubElements(ele, bd.getMethodOverrides());
+			//解析replaced-method属性
 			parseReplacedMethodSubElements(ele, bd.getMethodOverrides());
-
+			//解析constructor属性
 			parseConstructorArgElements(ele, bd);
+			//解析property子元素
 			parsePropertyElements(ele, bd);
+			//解析qualifier子元素
 			parseQualifierElements(ele, bd);
 
 			bd.setResource(this.readerContext.getResource());
@@ -555,28 +571,30 @@ public class BeanDefinitionParserDelegate {
 	 */
 	public AbstractBeanDefinition parseBeanDefinitionAttributes(Element ele, String beanName,
 			@Nullable BeanDefinition containingBean, AbstractBeanDefinition bd) {
-
+		//singleton属性已经过时了，若还在使用，将报错
 		if (ele.hasAttribute(SINGLETON_ATTRIBUTE)) {
 			error("Old 1.x 'singleton' attribute in use - upgrade to 'scope' declaration", ele);
-		}
+		}//scope属性
 		else if (ele.hasAttribute(SCOPE_ATTRIBUTE)) {
+			//为BeanDefinition的scope属性赋值，取自xml的scope属性
 			bd.setScope(ele.getAttribute(SCOPE_ATTRIBUTE));
-		}
+		}//todo containingBean是做啥的？
 		else if (containingBean != null) {
 			// Take default from containing bean in case of an inner bean definition.
 			bd.setScope(containingBean.getScope());
 		}
-
+		//为BeanDefinition的abstract属性赋值，取自xml的abstract属性
+		//abstract属性是为了减少bean属性重复设置而存在，同时配合parent属性使用
 		if (ele.hasAttribute(ABSTRACT_ATTRIBUTE)) {
 			bd.setAbstract(TRUE_VALUE.equals(ele.getAttribute(ABSTRACT_ATTRIBUTE)));
 		}
-
+		//为BeanDefinition的lazy-init属性赋值，取自xml的lazy-init属性
 		String lazyInit = ele.getAttribute(LAZY_INIT_ATTRIBUTE);
 		if (isDefaultValue(lazyInit)) {
 			lazyInit = this.defaults.getLazyInit();
 		}
 		bd.setLazyInit(TRUE_VALUE.equals(lazyInit));
-
+		//autowire属性
 		String autowire = ele.getAttribute(AUTOWIRE_ATTRIBUTE);
 		bd.setAutowireMode(getAutowireMode(autowire));
 
