@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+<!--	default-autowire="byType"-->
 	<bean id="user" class="org.springframework.demo.entity.User">
 		<property name="age" value="18"/>
 		<property name="name" value="老毛"/>
@@ -26,4 +28,16 @@
 	<bean id="c" class="org.springframework.demo.entity.C" scope="singleton">
 		<property name="a" ref="a"/>
 	</bean>
+
+	<!-- ignoreAware 接口 开始-->
+	<bean id="person" class="org.springframework.demo.entity.Person" scope="singleton">
+	</bean>
+	<bean id="roleDady" class="org.springframework.demo.entity.RoleDady" scope="singleton">
+	</bean>
+	<bean id="roleSon" class="org.springframework.demo.entity.RoleSon" scope="singleton">
+	</bean>
+	<bean id="roleStaff" class="org.springframework.demo.entity.RoleStaff" scope="singleton">
+	</bean>
+	<bean id="myBeanFacotryPostProcessor" class="org.springframework.demo.override.MyBeanFactoryPostProcessor"/>
+	<!-- ignoreAware 接口 结束-->
 </beans>

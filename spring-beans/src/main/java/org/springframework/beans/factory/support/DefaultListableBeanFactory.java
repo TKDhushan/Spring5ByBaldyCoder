@@ -1142,7 +1142,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	@Override
 	public void destroySingletons() {
 		super.destroySingletons();
+		//满足Predicate条件的集合，执行Consumer的方法
 		updateManualSingletonNames(Set::clear, set -> !set.isEmpty());
+		//清楚byType的bean
 		clearByTypeCache();
 	}
 
@@ -1163,6 +1165,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	 * @param condition a precondition for the modification action
 	 * (if this condition does not apply, the action can be skipped)
 	 */
+	//满足Predicate条件的集合，执行Consumer的方法，此方法在创建和销毁时传入不同条件，会复用
 	private void updateManualSingletonNames(Consumer<Set<String>> action, Predicate<Set<String>> condition) {
 		if (hasBeanCreationStarted()) {
 			// Cannot modify startup-time collection elements anymore (for stable iteration)

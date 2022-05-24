@@ -122,6 +122,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	protected final void refreshBeanFactory() throws BeansException {
 		//在此beanFacotry实例化前，已经存在其他beanFacotry，则销毁beanFactory
 		if (hasBeanFactory()) {
+			//将里面的对象全部消亡
 			destroyBeans();
 			closeBeanFactory();
 		}
@@ -166,7 +167,9 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	protected final void closeBeanFactory() {
 		DefaultListableBeanFactory beanFactory = this.beanFactory;
 		if (beanFactory != null) {
+			//将唯一ID置null
 			beanFactory.setSerializationId(null);
+			//对象置null
 			this.beanFactory = null;
 		}
 	}

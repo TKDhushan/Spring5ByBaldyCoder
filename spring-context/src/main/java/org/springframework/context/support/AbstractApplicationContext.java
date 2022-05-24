@@ -567,7 +567,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			 * 1、设置容器启动时间
 			 * 2、设置活跃状态为true
 			 * 3、设置关闭状态为false
-			 * 4、获取Environment对象，并加载当前系统的属性值到Environment对象
 			 * 5、准备监听器和时间的集合对象，默认为空的集合
 			 */
 			// Prepare this context for refreshing.
@@ -698,6 +697,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		 * 1、默认创建StandardEnvironment，保存的是系统环境变量
 		 * 2、之前已经创建过environment，此处不会再new
 		 * 3、验证需要的属性文件是否都已加载进来
+		 * demo:this.environment.setRequiredProperties();
 		 */
 		getEnvironment().validateRequiredProperties();
 
@@ -1214,6 +1214,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#destroySingletons()
 	 */
 	protected void destroyBeans() {
+		//对应还有registSingleton
 		getBeanFactory().destroySingletons();
 	}
 
