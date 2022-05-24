@@ -177,7 +177,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		 * 忽略要依赖的接口
 		 * 1、后续统一处理Aware接口实现
 		 * 2、现在装配环节先不处理
-		 * todo 后续做实验更新
+		 * todo 后续做实验更新 实验已更新
 		 */
 		ignoreDependencyInterface(BeanNameAware.class);
 		ignoreDependencyInterface(BeanFactoryAware.class);

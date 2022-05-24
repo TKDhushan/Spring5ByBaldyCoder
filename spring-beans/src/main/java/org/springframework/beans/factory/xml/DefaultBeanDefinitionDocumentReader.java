@@ -309,12 +309,20 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * and registering it with the registry.
 	 */
 	protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
-		//BeanDefinitionHolder 对BeanDefinition对象的封装
+		/**
+		 * BeanDefinitionHolder
+		 * 1、对BeanDefinition对象的封装类，封装了BeanDefinition、bean的名字和别名
+		 * 2、实际完成IOC容器注册，即使用此类完成
+		 * 3、BeanDefinitionHolder对象的得到，意味着BeanDefinition是通过BeanDefinitionParserDelegate对xml元素的信息按照spring的bean规则解析得到的
+		 * 处理流程
+		 * xml解析->Document转换->BeanDefinition存储->beanFacotry
+		 */
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		if (bdHolder != null) {
 			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
 			try {
 				// Register the final decorated instance.
+				//向IOC容器注册刚刚解析得到BeanDefinition的地方
 				BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, getReaderContext().getRegistry());
 			}
 			catch (BeanDefinitionStoreException ex) {
@@ -322,6 +330,14 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 						bdHolder.getBeanName() + "'", ele, ex);
 			}
 			// Send registration event.
+			//在beanDefinition向IOC容器注册完成后，发送消息
+
+
+
+
+
+
+
 			getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
 		}
 	}
