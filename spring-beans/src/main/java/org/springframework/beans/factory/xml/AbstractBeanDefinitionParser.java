@@ -76,9 +76,12 @@ public abstract class AbstractBeanDefinitionParser implements BeanDefinitionPars
 						aliases = StringUtils.trimArrayElements(StringUtils.commaDelimitedListToStringArray(name));
 					}
 				}
+				//将AbstractBeanDefinition 转换成 BeanDefinitionHolder
 				BeanDefinitionHolder holder = new BeanDefinitionHolder(definition, id, aliases);
+				//放到DefaultListableBeanFactory对象中
 				registerBeanDefinition(holder, parserContext.getRegistry());
 				if (shouldFireEvents()) {
+					//通知监听器处理
 					BeanComponentDefinition componentDefinition = new BeanComponentDefinition(holder);
 					postProcessComponentDefinition(componentDefinition);
 					parserContext.registerComponent(componentDefinition);

@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
->
+	   xmlns:mynamespace="http://www.mlx.com/schema/mlx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	    http://www.mlx.com/schema/mlx http://www.mlx.com/schema/mlx.xsd">
+	<!--xmlns:xsi 是指当前xml所要遵循的标签规范.
+		xsi:schemaLocation 指定的命名空间对应的验证文件 前面部分就是命名空间的名字，后面是xsd
+	-->
+<mynamespace:mlx id="ouba" name="mlx" age="18"/>
 <!--	default-autowire="byType"-->
 	<bean id="user" class="org.springframework.demo.entity.User">
 		<property name="age" value="18"/>

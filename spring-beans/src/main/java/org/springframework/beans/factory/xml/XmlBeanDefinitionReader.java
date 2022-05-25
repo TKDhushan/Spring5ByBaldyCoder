@@ -528,7 +528,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		BeanDefinitionDocumentReader documentReader = createBeanDefinitionDocumentReader();
 		//获取BeanDefinitionMap的解析个数
 		int countBefore = getRegistry().getBeanDefinitionCount();
-		//完成具体解析的过程
+		/**
+		 * 完成具体解析的过程---核心方法
+		 */
 		documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
 		return getRegistry().getBeanDefinitionCount() - countBefore;
 	}
@@ -547,6 +549,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * Create the {@link XmlReaderContext} to pass over to the document reader.
 	 */
 	public XmlReaderContext createReaderContext(Resource resource) {
+		//getNamespaceHandlerResolver方法返回一个handler解析器
 		return new XmlReaderContext(resource, this.problemReporter, this.eventListener,
 				this.sourceExtractor, this, getNamespaceHandlerResolver());
 	}
@@ -557,6 +560,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 */
 	public NamespaceHandlerResolver getNamespaceHandlerResolver() {
 		if (this.namespaceHandlerResolver == null) {
+			//创建解析器
 			this.namespaceHandlerResolver = createDefaultNamespaceHandlerResolver();
 		}
 		return this.namespaceHandlerResolver;
@@ -569,6 +573,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 */
 	protected NamespaceHandlerResolver createDefaultNamespaceHandlerResolver() {
 		ClassLoader cl = (getResourceLoader() != null ? getResourceLoader().getClassLoader() : getBeanClassLoader());
+		//反射创建DefaultNamespaceHandlerResolver，默认路径：META-INF/spring.handlers
 		return new DefaultNamespaceHandlerResolver(cl);
 	}
 

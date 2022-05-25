@@ -9,6 +9,7 @@ import org.springframework.demo.aware.RoleSonAware;
 import org.springframework.demo.entity.Person;
 import org.springframework.demo.entity.User;
 import org.springframework.demo.override.MyClassPathXmlApplicationContext;
+import org.springframework.demo.tag.MLX;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -34,6 +35,8 @@ public class MyTest {
 		BeanFactory beanFactory = new ClassPathXmlApplicationContext("META-INF/spring.xml");
 		//实时加载
 		User user = (User)beanFactory.getBean("user");
+		MLX ouba = (MLX)beanFactory.getBean("ouba");
+		System.out.println("ouba:"+ouba);
 		System.out.println("实时查找：" + user);
 	}
 

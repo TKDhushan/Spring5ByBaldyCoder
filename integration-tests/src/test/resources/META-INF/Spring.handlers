@@ -1,0 +1,2 @@
+http\://www.foo.example/schema/component=org.springframework.beans.factory.xml.ComponentNamespaceHandler
+http\://www.mlx.com/schema/mlx=org.springframework.demo.tag.MLXNamespaceHandler

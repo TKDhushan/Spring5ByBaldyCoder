@@ -1,0 +1,2 @@
+http\://www.foo.example/schema/component/component.xsd=org/springframework/beans/factory/xml/component.xsd
+http\://www.mlx.com/schema/mlx.xsd=META-INF/mlx.xsd

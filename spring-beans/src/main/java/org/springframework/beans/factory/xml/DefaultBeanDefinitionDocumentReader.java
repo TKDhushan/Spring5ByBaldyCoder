@@ -180,7 +180,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 					if (delegate.isDefaultNamespace(ele)) {
 						parseDefaultElement(ele, delegate);
 					}
-					//Spring的命名空间元素解析
+					//Spring的命名空间元素解析 ??自定义的命名空间解析
 					else {
 						delegate.parseCustomElement(ele);
 					}
