@@ -527,6 +527,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	/**
 	 * Return the list of BeanFactoryPostProcessors that will get applied
 	 * to the internal BeanFactory.
+	 * 返回所有前序已经注册进来的BeanFactoryPostProcessors
 	 */
 	public List<BeanFactoryPostProcessor> getBeanFactoryPostProcessors() {
 		return this.beanFactoryPostProcessors;
@@ -575,7 +576,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			 * 实例化beanFactory
 			 * 	1、创建容器对象：DefaultListableBeanFactory
 			 * 	2、加载xml配置文件的属性值到当前工厂中，最重要的就是BeanDefinition
-			 * 	3、此步骤返回的bean工厂只存储了简单的BeanDefinition，工厂成员变量值都是初始化的
+			 * 	3、此步骤返回的bean工厂只存储了简单的BeanDefinition，工厂成员变量值都是初始化的，下一个函数完成填充
 			 */
 			// Tell the subclass to refresh the internal bean factory.
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
@@ -586,6 +587,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			 * 	1、ignored Aware接口
 			 * 	2、添加beanPostProcessor
 			 * 	3、处理BeanName
+			 *
+			 * 	总结：各种属性的填充
 			 */
 			prepareBeanFactory(beanFactory);
 
@@ -758,21 +761,25 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		// Tell the internal bean factory to use the context's class loader etc.
-		//设置类加载器
+		//设置类加载器 当前context的类加载器
 		beanFactory.setBeanClassLoader(getClassLoader());
 		//解析spring.properties 里面是否配置spring.spel.ignore EL支持表达式
 		if (!shouldIgnoreSpel) {
+			//处理器里面包含解析器，解析器存储了配置
 			beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
 		}
+		//为beanFactory增加一个默认的propertyEditor，这个主要是对bean的属性等设置一个管理工具类
 		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
 
 		// Configure the bean factory with context callbacks.
 		/**
-		 * 设置忽略的Aware接口
+		 * 设置忽略的Aware自动装配接口
 		 * 此段代码执行完毕后：ignoredDependecyInterfaces ignoredDependencyTypes都会有值
 		 * 当前工厂还未初始化完毕，忽略Aware接口的实现
 		 * Aware接口目的是获取当前容器中的某些对象 Aware接口没有容器对象的句柄 官方交callback，要实现Aware接口的方法
-		 * 最终统一在invokeAwareMetMethod()中处理
+		 * 最终统一在doCreateBean方法里面调用invokeAwareMetMethod()中处理
+		 * 下面的几个Aware在ApplicationContextAwareProcessor.postProcessBeforeInitialization发方法有处理，所以忽略
+		 * 忽略的原因：这些接口的实现是由容器通过set方法进行注入的，所以在使用autowired进行注入的时候需要对于这些接口忽略
 		 */
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
@@ -851,6 +858,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		 * 在beanFactory容器中 添加，此步并不实例化：
 		 * 	1、BeanDefinitionRegistryPostProcessor  ->  postProcessBeanDefinitionRegistry()
 		 * 	2、BeanFactoryPostProcessor  ->  postProcessBeanFactory()
+		 * 	获取当前应用程序上下文的beanFactoryPostProcessors变量值，并且实例化调用执行所有已经注册的beanFacortyPostProcessor
+		 * 	默认情况下，通过getBeanFactoryPostProcessors()来获取已经注册的BFPP，但是默认是空的，customPropertyEditorTest的测试案例完成了自己扩展
 		 */
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 

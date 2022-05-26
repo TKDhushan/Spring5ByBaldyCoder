@@ -99,6 +99,7 @@ public class CustomEditorConfigurer implements BeanFactoryPostProcessor, Ordered
 
 	private int order = Ordered.LOWEST_PRECEDENCE;  // default: same as non-Ordered
 
+	//用于存放propertyEditorRegistrar，自定义的实现通过自定义类实现，注入 CustomEditorConfigurer类接口，将PropertyEditorRegistrar注入
 	@Nullable
 	private PropertyEditorRegistrar[] propertyEditorRegistrars;
 

@@ -77,6 +77,11 @@ public class ResourceEditorRegistrar implements PropertyEditorRegistrar {
 	 * @see org.springframework.context.ApplicationContext
 	 */
 	public ResourceEditorRegistrar(ResourceLoader resourceLoader, PropertyResolver propertyResolver) {
+		/**
+		 * 将资源加载器、属性解析器传入
+		 * 父类有一个registerCustomEditors方法，可以用来自定义实现
+		 * 自定义实现在AbstractBactoryBean.iniBeanWrapper中来调用
+		 */
 		this.resourceLoader = resourceLoader;
 		this.propertyResolver = propertyResolver;
 	}

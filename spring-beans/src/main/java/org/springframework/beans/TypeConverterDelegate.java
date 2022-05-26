@@ -116,6 +116,9 @@ class TypeConverterDelegate {
 			@Nullable Class<T> requiredType, @Nullable TypeDescriptor typeDescriptor) throws IllegalArgumentException {
 
 		// Custom editor for this type?
+		/**
+		 * 此步返回自定义的editor
+		 */
 		PropertyEditor editor = this.propertyEditorRegistry.findCustomEditor(requiredType, propertyName);
 
 		ConversionFailedException conversionAttemptEx = null;
@@ -417,6 +420,7 @@ class TypeConverterDelegate {
 	 * @return the converted value
 	 */
 	private Object doConvertTextValue(@Nullable Object oldValue, String newTextValue, PropertyEditor editor) {
+		//执行PropertyEditorSupport实现类的setValue方法 进行editor的转换
 		try {
 			editor.setValue(oldValue);
 		}

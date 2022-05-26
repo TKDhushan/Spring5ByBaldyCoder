@@ -101,6 +101,9 @@ public class StandardBeanExpressionResolver implements BeanExpressionResolver {
 	 * @param beanClassLoader the factory's bean class loader
 	 */
 	public StandardBeanExpressionResolver(@Nullable ClassLoader beanClassLoader) {
+		//SpelParserConfiguration ：SpringEL 表达式的一些配置，都是默认值
+		//SpelExpressionParser解析器存储上述的配置信息，里面有doParseExpression完成对应解析
+		//EL：#{}
 		this.expressionParser = new SpelExpressionParser(new SpelParserConfiguration(null, beanClassLoader));
 	}
 
