@@ -92,15 +92,15 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 		if (this.registry instanceof ResourceLoader) {
 			this.resourceLoader = (ResourceLoader) this.registry;
 		}
-		else {
+		else {//没啥实际代码，就是初始化new个对象
 			this.resourceLoader = new PathMatchingResourcePatternResolver();
 		}
 
 		// Inherit Environment if possible
-		if (this.registry instanceof EnvironmentCapable) {
+		if (this.registry instanceof EnvironmentCapable) {//false
 			this.environment = ((EnvironmentCapable) this.registry).getEnvironment();
 		}
-		else {
+		else {//abstractBeanDefinitionReader对象持有去重的environment属性
 			this.environment = new StandardEnvironment();
 		}
 	}

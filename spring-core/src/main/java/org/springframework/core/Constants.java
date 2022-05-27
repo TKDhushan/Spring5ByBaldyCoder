@@ -64,7 +64,7 @@ public class Constants {
 		this.className = clazz.getName();
 		Field[] fields = clazz.getFields();
 		for (Field field : fields) {
-			if (ReflectionUtils.isPublicStaticFinal(field)) {
+			if (ReflectionUtils.isPublicStaticFinal(field)) {//判断是否是：public static final
 				String name = field.getName();
 				try {
 					Object value = field.get(null);

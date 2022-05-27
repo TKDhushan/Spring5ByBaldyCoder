@@ -114,7 +114,7 @@ public class MutablePropertySources implements PropertySources {
 	 */
 	public void addLast(PropertySource<?> propertySource) {
 		synchronized (this.propertySourceList) {
-			removeIfPresent(propertySource);
+			removeIfPresent(propertySource);//先删后加，确保Lis唯一
 			this.propertySourceList.add(propertySource);
 		}
 	}

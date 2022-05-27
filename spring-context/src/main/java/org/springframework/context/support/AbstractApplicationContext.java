@@ -576,7 +576,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			 * 实例化beanFactory
 			 * 	1、创建容器对象：DefaultListableBeanFactory
 			 * 	2、加载xml配置文件的属性值到当前工厂中，最重要的就是BeanDefinition
-			 * 	3、此步骤返回的bean工厂只存储了简单的BeanDefinition，工厂成员变量值都是初始化的，下一个函数完成填充
+			 * 	3、此步骤返回的bean工厂只存储了简单的BeanDefinition，工厂成员变量值都是初始化的，下一个函数完成填充；完成系统属性、环境变量的赋值
 			 */
 			// Tell the subclass to refresh the internal bean factory.
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
@@ -687,7 +687,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				logger.trace("Refreshing " + this);
 			}
 			else {
-				logger.debug("Refreshing " + getDisplayName());
+				logger.debug("Refreshing " + getDisplayName());//当前类名+@+系统hash
 			}
 		}
 		//未实现即为空，后续子类可以重写
@@ -729,7 +729,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// Allow for the collection of early ApplicationEvents,
 		// to be published once the multicaster is available...
-		this.earlyApplicationEvents = new LinkedHashSet<>();
+		this.earlyApplicationEvents = new LinkedHashSet<>();//不管怎样最终都要清空earlyApplicationEvents
 	}
 
 	/**

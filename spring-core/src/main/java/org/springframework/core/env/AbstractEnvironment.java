@@ -133,8 +133,8 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * @see #customizePropertySources(MutablePropertySources)
 	 */
 	protected AbstractEnvironment(MutablePropertySources propertySources) {
-		this.propertySources = propertySources;
-		this.propertyResolver = createPropertyResolver(propertySources);
+		this.propertySources = propertySources;//size =0
+		this.propertyResolver = createPropertyResolver(propertySources);//纯初始化
 		//在此步完成 系统变量、环境变量的加载
 		customizePropertySources(propertySources);
 	}
@@ -147,7 +147,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * @see #getPropertyResolver()
 	 */
 	protected ConfigurablePropertyResolver createPropertyResolver(MutablePropertySources propertySources) {
-		return new PropertySourcesPropertyResolver(propertySources);
+		return new PropertySourcesPropertyResolver(propertySources);//propertySources暂无有效值
 	}
 
 	/**

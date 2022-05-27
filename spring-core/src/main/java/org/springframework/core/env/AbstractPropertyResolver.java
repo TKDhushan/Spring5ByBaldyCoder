@@ -249,7 +249,7 @@ public abstract class AbstractPropertyResolver implements ConfigurablePropertyRe
 	}
 
 	private String doResolvePlaceholders(String text, PropertyPlaceholderHelper helper) {
-		//this : todo 补充this的实现
+		//this : todo 补充this的实现 
 		return helper.replacePlaceholders(text, this::getPropertyAsRawString);
 	}
 

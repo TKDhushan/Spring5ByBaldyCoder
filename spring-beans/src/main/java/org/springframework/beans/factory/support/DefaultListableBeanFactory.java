@@ -205,7 +205,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	 * deserialized from this id back into the BeanFactory object, if needed.
 	 */
 	public void setSerializationId(@Nullable String serializationId) {
-		if (serializationId != null) {
+		if (serializationId != null) {//弱引用知识：https://blog.csdn.net/qq_33663983/article/details/78349641
 			serializableFactories.put(serializationId, new WeakReference<>(this));
 		}
 		else if (this.serializationId != null) {

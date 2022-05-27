@@ -184,12 +184,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		ignoreDependencyInterface(BeanNameAware.class);
 		ignoreDependencyInterface(BeanFactoryAware.class);
 		ignoreDependencyInterface(BeanClassLoaderAware.class);
-		//为了后面实例化
+		//为了后面实例化进行策略选择。Graalvm是一个编译器，系统属性差不多org.graalvm.nativeimage.imagecode，则下面是false
 		if (NativeDetector.inNativeImage()) {
 			this.instantiationStrategy = new SimpleInstantiationStrategy();
 		}
-		else {
-			this.instantiationStrategy = new CglibSubclassingInstantiationStrategy();
+		else {//CglibSubclassingInstantiationStrategy与父类均无构造函数
+			this.instantiationStrategy = new CglibSubclassingInstantiationStrategy();//CglibSubclassingInstantiationStrategy是SimpleInstantiationStrategy的子类
 		}
 	}
 
@@ -198,8 +198,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @param parentBeanFactory parent bean factory, or {@code null} if none
 	 */
 	public AbstractAutowireCapableBeanFactory(@Nullable BeanFactory parentBeanFactory) {
-		this();
-		setParentBeanFactory(parentBeanFactory);
+		this();//父类与子类构造函数实际只初始化，有意义的只是ignoreDependencyInterface
+		setParentBeanFactory(parentBeanFactory);//parentBeanFactory = null
 	}
 
 
