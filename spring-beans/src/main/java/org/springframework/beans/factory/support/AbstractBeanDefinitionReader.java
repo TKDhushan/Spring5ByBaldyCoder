@@ -259,7 +259,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 		for (String location : locations) {
 			count += loadBeanDefinitions(location);
 		}
-		//返回读取的配置文件个数
+		//返回读取的所有配置文件中转化的BeanDefiniton个数
 		return count;
 	}
 

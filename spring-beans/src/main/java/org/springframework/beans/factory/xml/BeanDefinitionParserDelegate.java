@@ -305,7 +305,7 @@ public class BeanDefinitionParserDelegate {
 	 * @see #getDefaults()
 	 */
 	public void initDefaults(Element root, @Nullable BeanDefinitionParserDelegate parent) {
-		populateDefaults(this.defaults, (parent != null ? parent.defaults : null), root);
+		populateDefaults(this.defaults, (parent != null ? parent.defaults : null), root);//parent=null，对未添加的属性，进行默认值处理
 		this.readerContext.fireDefaultsRegistered(this.defaults);
 	}
 
@@ -319,48 +319,48 @@ public class BeanDefinitionParserDelegate {
 	 * @param root the root element of the current bean definition document (or nested beans element)
 	 */
 	protected void populateDefaults(DocumentDefaultsDefinition defaults, @Nullable DocumentDefaultsDefinition parentDefaults, Element root) {
-		String lazyInit = root.getAttribute(DEFAULT_LAZY_INIT_ATTRIBUTE);
+		String lazyInit = root.getAttribute(DEFAULT_LAZY_INIT_ATTRIBUTE);//Element的getAttribute如果没有值，那么默认返回default？
 		if (isDefaultValue(lazyInit)) {
 			// Potentially inherited from outer <beans> sections, otherwise falling back to false.
-			lazyInit = (parentDefaults != null ? parentDefaults.getLazyInit() : FALSE_VALUE);
+			lazyInit = (parentDefaults != null ? parentDefaults.getLazyInit() : FALSE_VALUE);//没有配置优先取父节点，父节点没有则default对应FALSE
 		}
 		defaults.setLazyInit(lazyInit);
-
+		//处理default-merge 属性
 		String merge = root.getAttribute(DEFAULT_MERGE_ATTRIBUTE);
 		if (isDefaultValue(merge)) {
 			// Potentially inherited from outer <beans> sections, otherwise falling back to false.
-			merge = (parentDefaults != null ? parentDefaults.getMerge() : FALSE_VALUE);
+			merge = (parentDefaults != null ? parentDefaults.getMerge() : FALSE_VALUE);//没有配置优先取父节点，父节点没有则default对应FALSE
 		}
 		defaults.setMerge(merge);
-
+		//处理default-autowire 属性
 		String autowire = root.getAttribute(DEFAULT_AUTOWIRE_ATTRIBUTE);
 		if (isDefaultValue(autowire)) {
 			// Potentially inherited from outer <beans> sections, otherwise falling back to 'no'.
-			autowire = (parentDefaults != null ? parentDefaults.getAutowire() : AUTOWIRE_NO_VALUE);
+			autowire = (parentDefaults != null ? parentDefaults.getAutowire() : AUTOWIRE_NO_VALUE);//没有配置优先取父节点，父节点没有则default对应FALSE
 		}
 		defaults.setAutowire(autowire);
-
+		//处理default-autowire-candidates 属性
 		if (root.hasAttribute(DEFAULT_AUTOWIRE_CANDIDATES_ATTRIBUTE)) {
 			defaults.setAutowireCandidates(root.getAttribute(DEFAULT_AUTOWIRE_CANDIDATES_ATTRIBUTE));
 		}
 		else if (parentDefaults != null) {
 			defaults.setAutowireCandidates(parentDefaults.getAutowireCandidates());
 		}
-
+		//处理default-init-method 属性
 		if (root.hasAttribute(DEFAULT_INIT_METHOD_ATTRIBUTE)) {
 			defaults.setInitMethod(root.getAttribute(DEFAULT_INIT_METHOD_ATTRIBUTE));
 		}
 		else if (parentDefaults != null) {
 			defaults.setInitMethod(parentDefaults.getInitMethod());
 		}
-
+		////处理default-destroy-method 属性
 		if (root.hasAttribute(DEFAULT_DESTROY_METHOD_ATTRIBUTE)) {
 			defaults.setDestroyMethod(root.getAttribute(DEFAULT_DESTROY_METHOD_ATTRIBUTE));
 		}
 		else if (parentDefaults != null) {
 			defaults.setDestroyMethod(parentDefaults.getDestroyMethod());
 		}
-
+		//走了半天，defaults.source 依然为null？
 		defaults.setSource(this.readerContext.extractSource(root));
 	}
 

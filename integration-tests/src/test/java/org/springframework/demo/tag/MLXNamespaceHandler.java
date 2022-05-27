@@ -11,6 +11,8 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  */
 
 public class MLXNamespaceHandler extends NamespaceHandlerSupport {
+	//此类在DefaultNamespaceHandlerResolver.resolve中会自动调用init方法
+	//MLXNamespaceHandler类必须是NamespaceHandler的子类
 	@Override
 	public void init() {
 		registerBeanDefinitionParser("mlx",new MLXBeanDefinitionParser());

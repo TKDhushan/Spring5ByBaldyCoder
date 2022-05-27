@@ -304,7 +304,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 			}
 			else {
 				// a single resource with the given name
-				return new Resource[] {getResourceLoader().getResource(locationPattern)};
+				return new Resource[] {getResourceLoader().getResource(locationPattern)};//String -> URL->Resource
 			}
 		}
 	}

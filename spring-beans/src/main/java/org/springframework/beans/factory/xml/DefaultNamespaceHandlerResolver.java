@@ -134,7 +134,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 			try {
 				//通过反射将类路径转换为类
 				Class<?> handlerClass = ClassUtils.forName(className, this.classLoader);
-				if (!NamespaceHandler.class.isAssignableFrom(handlerClass)) {
+				if (!NamespaceHandler.class.isAssignableFrom(handlerClass)) {//父节点关系判断NamespaceHandler是不是>=handlerClass
 					throw new FatalBeanException("Class [" + className + "] for namespace [" + namespaceUri +
 							"] does not implement the [" + NamespaceHandler.class.getName() + "] interface");
 				}

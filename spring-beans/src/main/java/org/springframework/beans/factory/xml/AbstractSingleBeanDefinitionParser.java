@@ -78,7 +78,7 @@ public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDef
 			if (beanClassName != null) {
 				builder.getRawBeanDefinition().setBeanClassName(beanClassName);
 			}
-		}
+		}//raw:未经处理的
 		builder.getRawBeanDefinition().setSource(parserContext.extractSource(element));
 		BeanDefinition containingBd = parserContext.getContainingBeanDefinition();
 		if (containingBd != null) {

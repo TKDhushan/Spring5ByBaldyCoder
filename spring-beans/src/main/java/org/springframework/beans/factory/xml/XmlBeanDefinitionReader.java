@@ -464,7 +464,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		}
 		//如果没有指定则使用自动检测
 		int detectedMode = detectValidationMode(resource);
-		if (detectedMode != VALIDATION_AUTO) {
+		if (detectedMode != VALIDATION_AUTO) {//VALIDATION_XSD：3
 			return detectedMode;
 		}
 		// Hmm, we didn't get a clear indication... Let's assume XSD,
@@ -526,7 +526,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	public int registerBeanDefinitions(Document doc, Resource resource) throws BeanDefinitionStoreException {
 		//创实例，以便对封装完的BeanDefinition类进行解析
 		BeanDefinitionDocumentReader documentReader = createBeanDefinitionDocumentReader();
-		//获取BeanDefinitionMap的解析个数
+		//获取BeanDefinitionMap的解析个数，还没开始解析，所以coutBefore=0
 		int countBefore = getRegistry().getBeanDefinitionCount();
 		/**
 		 * 完成具体解析的过程---核心方法

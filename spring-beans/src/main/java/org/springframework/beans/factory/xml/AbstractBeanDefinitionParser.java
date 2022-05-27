@@ -60,7 +60,7 @@ public abstract class AbstractBeanDefinitionParser implements BeanDefinitionPars
 	@Override
 	@Nullable
 	public final BeanDefinition parse(Element element, ParserContext parserContext) {
-		AbstractBeanDefinition definition = parseInternal(element, parserContext);
+		AbstractBeanDefinition definition = parseInternal(element, parserContext);//完成解析器的调用
 		if (definition != null && !parserContext.isNested()) {
 			try {
 				String id = resolveId(element, definition, parserContext);
@@ -71,7 +71,7 @@ public abstract class AbstractBeanDefinitionParser implements BeanDefinitionPars
 				}
 				String[] aliases = null;
 				if (shouldParseNameAsAliases()) {
-					String name = element.getAttribute(NAME_ATTRIBUTE);
+					String name = element.getAttribute(NAME_ATTRIBUTE);//获取name属性值，此处name与entity里的name不是一回事
 					if (StringUtils.hasLength(name)) {
 						aliases = StringUtils.trimArrayElements(StringUtils.commaDelimitedListToStringArray(name));
 					}
@@ -115,7 +115,7 @@ public abstract class AbstractBeanDefinitionParser implements BeanDefinitionPars
 		if (shouldGenerateId()) {
 			return parserContext.getReaderContext().generateBeanName(definition);
 		}
-		else {
+		else {//获取标签中ID属性值
 			String id = element.getAttribute(ID_ATTRIBUTE);
 			if (!StringUtils.hasText(id) && shouldGenerateIdAsFallback()) {
 				id = parserContext.getReaderContext().generateBeanName(definition);

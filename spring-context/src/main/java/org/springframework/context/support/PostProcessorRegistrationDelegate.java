@@ -112,13 +112,14 @@ final class PostProcessorRegistrationDelegate {
 			// uninitialized to let the bean factory post-processors apply to them!
 			// Separate between BeanDefinitionRegistryPostProcessors that implement
 			// PriorityOrdered, Ordered, and the rest.
-			//用于保存本次要执行的BeanDefinitionRegistryPostProcessor
+			//用于保存本次要执行的BeanDefinitionRegistryPostProcessor,不是上面外部的BFPP
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
 			/**
 			 * 1、调用所有实现PriorityOrdered接口的BeanDefinitionRegistryPostProcessor实现类
 			 * 2、找到所有实现BeanDefinitionRegistryPostProcessor接口bean的beanName
+			 * 3、下面又执行一遍getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class） 是防止上面执行中有新增BFPP
 			 */
 			String[] postProcessorNames =
 					beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
@@ -276,6 +277,7 @@ final class PostProcessorRegistrationDelegate {
 
 		// Clear cached merged bean definitions since the post-processors might have
 		// modified the original metadata, e.g. replacing placeholders in values...
+		//清空缓存？
 		beanFactory.clearMetadataCache();
 	}
 
@@ -393,16 +395,21 @@ final class PostProcessorRegistrationDelegate {
 
 	private static void sortPostProcessors(List<?> postProcessors, ConfigurableListableBeanFactory beanFactory) {
 		// Nothing to sort?
+		//如果postProcessors个数小于等于1，没必要排序
 		if (postProcessors.size() <= 1) {
 			return;
 		}
 		Comparator<Object> comparatorToUse = null;
+		//判断是否是DefaultListableBeanFactory类型
 		if (beanFactory instanceof DefaultListableBeanFactory) {
+			//比较器
 			comparatorToUse = ((DefaultListableBeanFactory) beanFactory).getDependencyComparator();
 		}
 		if (comparatorToUse == null) {
+			//如果没有比较器，则使用默认的OrderComparator
 			comparatorToUse = OrderComparator.INSTANCE;
 		}
+		//使用比较器对postProcessors进行排序
 		postProcessors.sort(comparatorToUse);
 	}
 

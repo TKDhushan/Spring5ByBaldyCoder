@@ -595,7 +595,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
 				/**
-				 * 空方法，留个代码槽儿
+				 * 空方法，留个代码槽儿,由子类覆盖进行实现
+				 * springboot中就有对应的覆盖
 				 */
 				postProcessBeanFactory(beanFactory);
 				//只是一个程序执行的标记
@@ -605,12 +606,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				 * 1、实例化和执行bean的所有BeanFactoryPostProcessor
 				 * 2、若提供顺序，则顺序执行
 				 * 3、单例在启动期间完成创建，所以单例必须在实例化钱执行
+				 * 4、BFPP作用：
+				 * 		a、对于BF进行属性修改。如${abc}的替换
 				 */
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
 				/**
-				 * 实例化并执行 BeanPostProcessor
+				 * 实例 BeanPostProcessor
+				 * 1、此处只是注册bean处理器，真正调用在getBean中。可见测试小demo
 				 */
 				registerBeanPostProcessors(beanFactory);
 				beanPostProcess.end();
@@ -806,10 +810,24 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Register early post-processor for detecting inner beans as ApplicationListeners.
 		/**
 		 * 1、beanFactory.beanPostProcessors为List，每一次add，都想列表里面增加，相同对象，以最后一次的为准
+		 * 2、ApplicationListenerDetector作用
+		 * 		1、检测bean是否实现了ApplicationListener接口。目的如下：
+		 * 	    2、实例化完成后，如果bean是单例的，并且属于ApplicationListener接口，则加入到多播器中
+		 * 	    3、bean销毁之前，如果bean是一个applicationListener，则从多波器中提前删除
 		 */
 		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found.
+		/**
+		 * 1、增加AspectJ的支持，在Java中织入分为三种方式：
+		 * 		a、编译器织入：在java编译期，采用特殊的编译器，将切面织入到java类中
+		 * 		b、类加载器织入：通过特殊的类加载器，在类字节码加载到JVM时，织入切面
+		 * 		c、运行期织入：采用cglib和jdk进行切面的织入
+		 * 2、aspectj提供了两种织入方式，
+		 * 		a、第一种是通过特殊编译器，在编译期，将aspectj语言编写的切面类织入到java类中
+		 * 		b、第二种是类加载期织入，就是下面load time weaving
+		 */
+		//提前将aop内容完成设置
 		if (!NativeDetector.inNativeImage() && beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
 			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
 			// Set a temporary ClassLoader for type matching.
@@ -821,7 +839,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		 * containsLocalBean
 		 * 	1、去掉"&"符号，获取真实的bean name。如：name从"&MyBean"变成"MyBean"
 		 * 	2、循环别名处理
-		 * registerSingleton
+		 * registerSingleton----一级缓存
 		 * 	1、registerSingleton 涉及一二三级缓存概念，后续研究
 		 */
 		if (!beanFactory.containsLocalBean(ENVIRONMENT_BEAN_NAME)) {

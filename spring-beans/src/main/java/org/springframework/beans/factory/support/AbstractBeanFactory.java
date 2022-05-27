@@ -1481,6 +1481,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	public void clearMetadataCache() {
 		this.mergedBeanDefinitions.forEach((beanName, bd) -> {
 			if (!isBeanEligibleForMetadataCaching(beanName)) {
+				//bd是否要re-merged
 				bd.stale = true;
 			}
 		});

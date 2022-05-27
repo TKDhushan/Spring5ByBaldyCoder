@@ -1,5 +1,7 @@
 package org.springframework.demo.override;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -24,5 +26,19 @@ public class MyClassPathXmlApplicationContext extends ClassPathXmlApplicationCon
 		getEnvironment().setRequiredProperties("MLX");
 		getEnvironment().setRequiredProperties("OUBA");
 		getEnvironment().setRequiredProperties("HAHA");
+	}
+
+	@Override
+	protected void customizeBeanFactory(DefaultListableBeanFactory beanFactory) {
+		super.setAllowCircularReferences(false);
+		//如果xml中不配置这个processor，也可以在此进行add
+		//super.addBeanFactoryPostProcessor(new MyBeanFactoryPostProcessor());
+		super.customizeBeanFactory(beanFactory);
+	}
+
+	@Override
+	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		super.postProcessBeanFactory(beanFactory);
+		System.out.println("自定义扩展子类实现");
 	}
 }
