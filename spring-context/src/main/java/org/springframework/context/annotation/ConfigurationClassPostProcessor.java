@@ -310,12 +310,16 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		for (String beanName : candidateNames) {
 			//获取指定名称的BeanDefiniton对象
 			BeanDefinition beanDef = registry.getBeanDefinition(beanName);
+			//如果bd中configurationClass属性不为空，那么意味着已经处理过，输入日志信息
 			if (beanDef.getAttribute(ConfigurationClassUtils.CONFIGURATION_CLASS_ATTRIBUTE) != null) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Bean definition has already been processed as a configuration class: " + beanDef);
 				}
 			}
-			//判断当前的BeanDefiniton是否加了@Configuration注解的类
+			//判断当前的BeanDefiniton是否加了@Configuration注解的类,即是否是一个配置类，最终为bd设置属性lite或者full，为了后续调用
+			//如果Configuration配置proxyBeanMethods代理为true，则为full
+			//如果加了@Component、@ComponentScan、@Import、@ImportResource、@Bean，则为lite
+			//如果配置类上呗@Order注解标注，则设置BD的order属性值
 			else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
 				//添加到对应结合对象中
 				configCandidates.add(new BeanDefinitionHolder(beanDef, beanName));
@@ -344,13 +348,15 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			sbr = (SingletonBeanRegistry) registry;
 			//判断是否有自定义的beanName生成器
 			if (!this.localBeanNameGeneratorSet) {
-				//获取beanName生成器
+				//获取自定义beanName生成器
 				BeanNameGenerator generator = (BeanNameGenerator) sbr.getSingleton(
 						AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR);
+				//如果有自定义的命名生成策略
 				if (generator != null) {
 					//componentScanBeanNameGenerator与importBeanNameGenerator定义时就复制了new AnnotationBeanNameGenerator()
+					//设置组件扫描的beanName生成策略
 					this.componentScanBeanNameGenerator = generator;
-					//如果spring有默认的beanName生成器，则重新赋值
+					//设置import  bean name的生产策略
 					this.importBeanNameGenerator = generator;
 				}
 			}
@@ -367,18 +373,22 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				this.resourceLoader, this.componentScanBeanNameGenerator, registry);
 		// 创建两个集合对象
 		//candidates用于将之前的configCandidates去重
-		//alreadyParsed用于判断是否应处理过了
+		//alreadyParsed用于判断是否应处理过了，存放扫描包下的bean
 		Set<BeanDefinitionHolder> candidates = new LinkedHashSet<>(configCandidates);
 		Set<ConfigurationClass> alreadyParsed = new HashSet<>(configCandidates.size());
 		do {
 			StartupStep processConfig = this.applicationStartup.start("spring.context.config-classes.parse");
+			//循环解析带有@Controller、@ComponentScan、@Import、@ImportResource、@ComponentScans、@Bean的bd
 			parser.parse(candidates);
+			//讲解析完的Configuration配置类进行校验 1、配置类不能是final 2、@Bean修饰的方法必须可以重写支持CGLIB
 			parser.validate();
-
+			//获取所有的bean，包括扫描的bean对象，@Import导入的bean对象
 			Set<ConfigurationClass> configClasses = new LinkedHashSet<>(parser.getConfigurationClasses());
+			//清楚以及解析处理过的配置类
 			configClasses.removeAll(alreadyParsed);
 
 			// Read the model and create bean definitions based on its content
+			//判断读取器是否为空，如果为空，就创建完全填充好的ConfigurationClass实例的读取器
 			if (this.reader == null) {
 				this.reader = new ConfigurationClassBeanDefinitionReader(
 						registry, this.sourceExtractor, this.resourceLoader, this.environment,

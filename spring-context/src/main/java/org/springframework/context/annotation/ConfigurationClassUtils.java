@@ -50,11 +50,11 @@ import org.springframework.stereotype.Component;
  * @since 3.1
  */
 abstract class ConfigurationClassUtils {
-
+	//configuration class 如果是@configuration注解标注的类，那么将属性标注为full
 	public static final String CONFIGURATION_CLASS_FULL = "full";
-
+	//非@Configuration注解标注的类，那么将属性标注如lite
 	public static final String CONFIGURATION_CLASS_LITE = "lite";
-
+	//key
 	public static final String CONFIGURATION_CLASS_ATTRIBUTE =
 			Conventions.getQualifiedAttributeName(ConfigurationClassPostProcessor.class, "configurationClass");
 
@@ -63,7 +63,7 @@ abstract class ConfigurationClassUtils {
 
 
 	private static final Log logger = LogFactory.getLog(ConfigurationClassUtils.class);
-
+	// 定义set节后，用于存储标注配置类注解
 	private static final Set<String> candidateIndicators = new HashSet<>(8);
 
 	static {
@@ -168,11 +168,13 @@ abstract class ConfigurationClassUtils {
 	 */
 	public static boolean isConfigurationCandidate(AnnotationMetadata metadata) {
 		// Do not consider an interface or an annotation...
+		//不考虑接口或注解
 		if (metadata.isInterface()) {
 			return false;
 		}
 
 		// Any of the typical annotations found?
+		//检查是否被注解@Component、@ComponentScan、@Import、@ImportResource所标注
 		for (String indicator : candidateIndicators) {
 			if (metadata.isAnnotated(indicator)) {
 				return true;
@@ -180,11 +182,13 @@ abstract class ConfigurationClassUtils {
 		}
 
 		// Finally, let's look for @Bean methods...
+		//最后检查时候有@Bean注解
 		return hasBeanMethods(metadata);
 	}
 
 	static boolean hasBeanMethods(AnnotationMetadata metadata) {
 		try {
+			//是否@Bean注解标注
 			return metadata.hasAnnotatedMethods(Bean.class.getName());
 		}
 		catch (Throwable ex) {
