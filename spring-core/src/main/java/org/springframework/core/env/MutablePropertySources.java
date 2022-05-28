@@ -40,7 +40,7 @@ import org.springframework.lang.Nullable;
  * @see PropertySourcesPropertyResolver
  */
 public class MutablePropertySources implements PropertySources {
-
+	//用于存储环境变量、系统属性、自定义property(配合propertySource注解)
 	private final List<PropertySource<?>> propertySourceList = new CopyOnWriteArrayList<>();
 
 
@@ -113,6 +113,7 @@ public class MutablePropertySources implements PropertySources {
 	 * Add the given property source object with lowest precedence.
 	 */
 	public void addLast(PropertySource<?> propertySource) {
+		//当自定义的property加载时，会在环境变量、系统属性后面追加一个list对象
 		synchronized (this.propertySourceList) {
 			removeIfPresent(propertySource);//先删后加，确保Lis唯一
 			this.propertySourceList.add(propertySource);
