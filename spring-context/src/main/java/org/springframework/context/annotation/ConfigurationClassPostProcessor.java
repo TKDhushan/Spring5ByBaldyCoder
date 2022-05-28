@@ -261,6 +261,9 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		//将马上要进行处理的registry对象的id值放到已经处理的集合对象中
 		this.registriesPostProcessed.add(registryId);
 		//处理配置类的bean定义信息
+		/**
+		 * 核心方法
+		 */
 		processConfigBeanDefinitions(registry);
 	}
 
@@ -303,7 +306,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
 		//当前registry就是DefaultListableBeanFacotry，获取所有已经注册的BeanDefinition的beanName
 		String[] candidateNames = registry.getBeanDefinitionNames();
-		//遍历所有要处理的beanDefinition的名称
+		//遍历所有要处理的beanDefinition的名称，筛选对应beanDefinition（被对应注解所修饰的）
 		for (String beanName : candidateNames) {
 			//获取指定名称的BeanDefiniton对象
 			BeanDefinition beanDef = registry.getBeanDefinition(beanName);
