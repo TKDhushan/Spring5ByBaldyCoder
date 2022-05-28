@@ -26,4 +26,9 @@ public class SuperUser extends User{
     public void setAddr(String addr) {
         this.addr = addr;
     }
+
+	public SuperUser(Long age, String name, String addr) {
+		super(age, name);
+		this.addr = addr;
+	}
 }

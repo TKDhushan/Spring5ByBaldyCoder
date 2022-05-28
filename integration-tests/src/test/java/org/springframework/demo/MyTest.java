@@ -38,8 +38,11 @@ public class MyTest {
 		BeanFactory beanFactory = new ClassPathXmlApplicationContext("META-INF/spring.xml");
 		MyEntity myEntity = beanFactory.getBean(MyEntity.class);
 		MyPropertySource myPropertySource = beanFactory.getBean(MyPropertySource.class);
+		//User user = beanFactory.getBean(User.class);
+		User lucy = beanFactory.getBean("lucy", User.class);
 		System.out.println(myEntity);
 		System.out.println(myPropertySource);
+		System.out.println(lucy);
 	}
 
 	/**

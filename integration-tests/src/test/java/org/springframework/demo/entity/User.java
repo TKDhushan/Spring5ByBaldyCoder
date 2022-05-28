@@ -10,10 +10,10 @@ package org.springframework.demo.entity;
 
 public class User {
 
-//    public User(Long age, String name) {
-//        this.age = age;
-//        this.name = name;
-//    }
+    public User(Long age, String name) {
+        this.age = age;
+        this.name = name;
+    }
 
     private Long age;
 
