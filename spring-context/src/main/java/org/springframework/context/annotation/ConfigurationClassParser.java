@@ -191,7 +191,8 @@ class ConfigurationClassParser {
 						"Failed to parse configuration class [" + bd.getBeanClassName() + "]", ex);
 			}
 		}
-
+		// 执行找到的DeferredImportSelector
+		//DeferedImportSelector是ImportSelector的一个子类
 		this.deferredImportSelectorHandler.process();
 	}
 
@@ -339,6 +340,7 @@ class ConfigurationClassParser {
 		processImports(configClass, sourceClass, getImports(sourceClass), filter, true);
 
 		// Process any @ImportResource annotations
+		//处理@ImportResource注解，导入spring的配置文件
 		AnnotationAttributes importResource =
 				AnnotationConfigUtils.attributesFor(sourceClass.getMetadata(), ImportResource.class);
 		if (importResource != null) {
@@ -351,15 +353,18 @@ class ConfigurationClassParser {
 		}
 
 		// Process individual @Bean methods
+		//处理加了@Bean注解的方法，将@Bean方法转化为BeanMethod对象，保存在集合中
 		Set<MethodMetadata> beanMethods = retrieveBeanMethodMetadata(sourceClass);
 		for (MethodMetadata methodMetadata : beanMethods) {
 			configClass.addBeanMethod(new BeanMethod(methodMetadata, configClass));
 		}
 
 		// Process default methods on interfaces
+		//处理接口的默认方法实现，从jdk8开始，接口中的方法可以有默认实现，因此这个接口如果加了@Bean注解，也需要被解析
 		processInterfaces(configClass, sourceClass);
 
 		// Process superclass, if any
+		//解析父类，如果被解析的配置类继承了某个类，那么配置类的父类也会被进行解析
 		if (sourceClass.getMetadata().hasSuperClass()) {
 			String superclass = sourceClass.getMetadata().getSuperClassName();
 			if (superclass != null && !superclass.startsWith("java") &&
@@ -587,10 +592,12 @@ class ConfigurationClassParser {
 		if (visited.add(sourceClass)) {
 			for (SourceClass annotation : sourceClass.getAnnotations()) {
 				String annName = annotation.getMetadata().getClassName();
+				//递归处理其他可能包含@Import的注解
 				if (!annName.equals(Import.class.getName())) {
 					collectImports(annotation, imports, visited);
 				}
 			}
+			//读取Import注解的值
 			imports.addAll(sourceClass.getAnnotationAttributes(Import.class.getName(), "value"));
 		}
 	}
@@ -598,39 +605,52 @@ class ConfigurationClassParser {
 	private void processImports(ConfigurationClass configClass, SourceClass currentSourceClass,
 			Collection<SourceClass> importCandidates, Predicate<String> exclusionFilter,
 			boolean checkForCircularImports) {
-
+		//如果使用@Import注解修饰的类集合为空，那么直接返回
 		if (importCandidates.isEmpty()) {
 			return;
 		}
-
+		//通过一个栈结构解决循环引入
 		if (checkForCircularImports && isChainedImportOnStack(configClass)) {
 			this.problemReporter.error(new CircularImportProblem(configClass, this.importStack));
 		}
 		else {
+			//添加到栈中，用于处理循环引入的问题
 			this.importStack.push(configClass);
 			try {
+				//遍历每一个@Import注解的类
 				for (SourceClass candidate : importCandidates) {
+					//检查配置类Import引入的类是否是ImportSelectorl类
 					if (candidate.isAssignable(ImportSelector.class)) {
 						// Candidate class is an ImportSelector -> delegate to it to determine imports
+						//候选类是一个导入选择器->委托来确定是否进行导入
 						Class<?> candidateClass = candidate.loadClass();
+						//通过反射生产一个ImportSelect对象
 						ImportSelector selector = ParserStrategyUtils.instantiateClass(candidateClass, ImportSelector.class,
 								this.environment, this.resourceLoader, this.registry);
+						//获取选择器的额外过滤器
 						Predicate<String> selectorFilter = selector.getExclusionFilter();
 						if (selectorFilter != null) {
 							exclusionFilter = exclusionFilter.or(selectorFilter);
 						}
+						//判断引用选择器是否是DeferredImportSelector接口的实例
+						//如果是则应用选择器将会在所有的配置类加载完毕后加载
 						if (selector instanceof DeferredImportSelector) {
+							//将选择器添加到deferredImportSelectorHandler实例中，预留到所有的配置类加载完成后统一处理自动化配置类
 							this.deferredImportSelectorHandler.handle(configClass, (DeferredImportSelector) selector);
 						}
 						else {
+							//或去引入的类，然后使用递归方式将这些类中同样添加了@Import注解引用的类
 							String[] importClassNames = selector.selectImports(currentSourceClass.getMetadata());
 							Collection<SourceClass> importSourceClasses = asSourceClasses(importClassNames, exclusionFilter);
+							//递归处理，被Import进来的类也有可能@Import注解
 							processImports(configClass, currentSourceClass, importSourceClasses, exclusionFilter, false);
 						}
 					}
+					//如果是实现了ImportBeanDefinitionRegistrar接口的bd
 					else if (candidate.isAssignable(ImportBeanDefinitionRegistrar.class)) {
 						// Candidate class is an ImportBeanDefinitionRegistrar ->
 						// delegate to it to register additional bean definitions
+						//候选类是ImportBeanDefinitionRegistrar -> 委托给当前注册器注册其他bean
 						Class<?> candidateClass = candidate.loadClass();
 						ImportBeanDefinitionRegistrar registrar =
 								ParserStrategyUtils.instantiateClass(candidateClass, ImportBeanDefinitionRegistrar.class,
