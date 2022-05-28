@@ -129,6 +129,9 @@ class ComponentScanAnnotationParser {
 				return declaringClass.equals(className);
 			}
 		});
+		/**
+		 * 上述步骤完成的是@ComponentScan注解的属性解析，完成解析后，最终要针对@ComponentScan的basePackages包内的类扫描
+		 */
 		//开始执行扫描，最终的扫描器是classPathBeanDefinitionScanner
 		return scanner.doScan(StringUtils.toStringArray(basePackages));
 	}

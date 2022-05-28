@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns:mynamespace="http://www.mlx.com/schema/mlx"
+	   xmlns:mynamespace="http://www.mlx.com/schema/mlx" xmlns:context="http://www.springframework.org/schema/context"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-	    http://www.mlx.com/schema/mlx http://www.mlx.com/schema/mlx.xsd" >
+	    http://www.mlx.com/schema/mlx http://www.mlx.com/schema/mlx.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
 	<!--	default-autowire="byType"-->
-
-	<!-- 自定义属性解析器 begin -->
-
-	<!-- 自定义属性解析器 end   -->
 
 	<!--xmlns:xsi 是指当前xml所要遵循的标签规范.
 		xsi:schemaLocation 指定的命名空间对应的验证文件 前面部分就是命名空间的名字，后面是xsd
 	-->
+
+	<context:component-scan base-package="org.springframework.demo.config"></context:component-scan>
+
 	<!-- 自定义标签  begin -->
 	<mynamespace:mlx id="ouba" name="mlx" age="18"/>
 	<!-- 自定义命名空间  end -->

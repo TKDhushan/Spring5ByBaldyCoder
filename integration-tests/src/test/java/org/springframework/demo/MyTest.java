@@ -6,7 +6,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.env.MissingRequiredPropertiesException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.demo.aware.RoleSonAware;
+import org.springframework.demo.config.MyConfig;
+import org.springframework.demo.config.MyPropertySource;
 import org.springframework.demo.custom.editor.People;
+import org.springframework.demo.entity.MyEntity;
 import org.springframework.demo.entity.Person;
 import org.springframework.demo.entity.User;
 import org.springframework.demo.override.MyClassPathXmlApplicationContext;
@@ -30,6 +33,15 @@ import java.util.stream.Stream;
  */
 
 public class MyTest {
+	@Test
+	void componentParseTest(){
+		BeanFactory beanFactory = new ClassPathXmlApplicationContext("META-INF/spring.xml");
+		MyEntity myEntity = beanFactory.getBean(MyEntity.class);
+		MyPropertySource myPropertySource = beanFactory.getBean(MyPropertySource.class);
+		System.out.println(myEntity);
+		System.out.println(myPropertySource);
+	}
+
 	/**
 	 * 自定义属性解析器
 	 * 1、xml中配置的CustomEditorConfigurer 其实是一个BeanFactoryPostProcessor
