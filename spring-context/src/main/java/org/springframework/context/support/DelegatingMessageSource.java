@@ -25,6 +25,7 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.lang.Nullable;
 
 /**
+ * 消息源解析委派类，当用户未制定时，springContext默认使用当前类
  * Empty {@link MessageSource} that delegates all calls to the parent MessageSource.
  * If no parent is available, it simply won't resolve any message.
  *
@@ -36,7 +37,7 @@ import org.springframework.lang.Nullable;
  * @see AbstractApplicationContext
  */
 public class DelegatingMessageSource extends MessageSourceSupport implements HierarchicalMessageSource {
-
+	//福消息解析源
 	@Nullable
 	private MessageSource parentMessageSource;
 
