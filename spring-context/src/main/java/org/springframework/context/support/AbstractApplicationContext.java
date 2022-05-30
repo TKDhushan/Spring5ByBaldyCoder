@@ -624,6 +624,18 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
+				/**
+				 * 监听的概念：
+				 * 1、事件-》被观察者具体要执行的动作
+				 * 2、监听器-》观察者，可能存在多个，接受不同的事件来做不同的处理工作
+				 * 3、多播器-》被观察者遍历观察者通知消息的操作封装一个委托多播器
+				 * 4、事件源-》谁来调用或者发布具体的时间
+				 * 执行过程：
+				 * 1、事件源来发布不同的事件
+				 * 2、当发布事件后会调用多播器的方法来进行事件广播操作
+				 * 3、多播器去触发具体具体的点挺起去执行操作
+				 * 4、监听器接收到具体时间后，可以验证是否能处理当前时间，如果可以，处理；否则不处理
+				 */
 				//初始化广播 放到applicationEventMulticaster中
 				initApplicationEventMulticaster();
 
@@ -944,8 +956,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see org.springframework.context.event.SimpleApplicationEventMulticaster
 	 */
 	protected void initApplicationEventMulticaster() {
+		//获取当前bean工厂，一般是DefaultListableBeanFactory
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+		//判断容器中是否存在beanDefinitionName为pplicationEventMulticaster的bd，即自定义的时间监听多播器，必须实现ApplicationEventMulticaster,
 		if (beanFactory.containsLocalBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME)) {
+			//若有，则从bean工厂得到这个实例对象
 			this.applicationEventMulticaster =
 					beanFactory.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, ApplicationEventMulticaster.class);
 			if (logger.isTraceEnabled()) {
@@ -953,6 +968,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			}
 		}
 		else {
+			//没有，则默认采用SimpleApplicationEventMulticaster
 			this.applicationEventMulticaster = new SimpleApplicationEventMulticaster(beanFactory);
 			beanFactory.registerSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, this.applicationEventMulticaster);
 			if (logger.isTraceEnabled()) {
@@ -1005,18 +1021,22 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void registerListeners() {
 		// Register statically specified listeners first.
+		//遍历应用程序中存在的监听器集合，并将对应的监听器添加到监听器的多路广播器中
 		for (ApplicationListener<?> listener : getApplicationListeners()) {
 			getApplicationEventMulticaster().addApplicationListener(listener);
 		}
 
 		// Do not initialize FactoryBeans here: We need to leave all regular beans
 		// uninitialized to let post-processors apply to them!
+		//从容器中获取所有实现了ApplicationListener接口的bd的bdName
+		//放入ApplicationListenerBeans集合中
 		String[] listenerBeanNames = getBeanNamesForType(ApplicationListener.class, true, false);
 		for (String listenerBeanName : listenerBeanNames) {
 			getApplicationEventMulticaster().addApplicationListenerBean(listenerBeanName);
 		}
 
 		// Publish early application events now that we finally have a multicaster...
+		//此处先发布早期的监听器集合
 		Set<ApplicationEvent> earlyEventsToProcess = this.earlyApplicationEvents;
 		this.earlyApplicationEvents = null;
 		if (!CollectionUtils.isEmpty(earlyEventsToProcess)) {

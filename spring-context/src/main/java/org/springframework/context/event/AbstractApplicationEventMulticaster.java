@@ -63,19 +63,22 @@ import org.springframework.util.ObjectUtils;
  */
 public abstract class AbstractApplicationEventMulticaster
 		implements ApplicationEventMulticaster, BeanClassLoaderAware, BeanFactoryAware {
-
+	//创建监听器助手类（内部类），用于存放应用程序的监听器集合，参数是否是预过滤监听器为false
 	private final DefaultListenerRetriever defaultRetriever = new DefaultListenerRetriever();
-
+	//ListenerCacheKey是基于时间类型和源类型的类作为key用来存储监听器助手defaultRetriever
 	final Map<ListenerCacheKey, CachedListenerRetriever> retrieverCache = new ConcurrentHashMap<>(64);
 
 	@Nullable
+	//类加载器
 	private ClassLoader beanClassLoader;
 
 	@Nullable
+	//IOC容器工厂类
 	private ConfigurableBeanFactory beanFactory;
 
 
 	@Override
+	//互斥的监听器助手类
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.beanClassLoader = classLoader;
 	}
@@ -99,24 +102,34 @@ public abstract class AbstractApplicationEventMulticaster
 		return this.beanFactory;
 	}
 
-
+	/**
+	 *
+	 * 增加应用程序监听器类
+	 */
 	@Override
 	public void addApplicationListener(ApplicationListener<?> listener) {
+		//锁定监听器助手对象
 		synchronized (this.defaultRetriever) {
 			// Explicitly remove target for a proxy, if registered already,
 			// in order to avoid double invocations of the same listener.
+			//如果已经注册，则显示剔除已经注册的监听器对象，为了避免调用重复的监听器对象
 			Object singletonTarget = AopProxyUtils.getSingletonTarget(listener);
 			if (singletonTarget instanceof ApplicationListener) {
+				//删除监听器对象
 				this.defaultRetriever.applicationListeners.remove(singletonTarget);
 			}
+			//新增监听器对象
 			this.defaultRetriever.applicationListeners.add(listener);
+			//清空监听器助手缓存map
 			this.retrieverCache.clear();
 		}
 	}
 
 	@Override
 	public void addApplicationListenerBean(String listenerBeanName) {
+		//锁定监听器助手对象
 		synchronized (this.defaultRetriever) {
+			//新增bean name为 listenerBeanName的监听器对象到集合中
 			this.defaultRetriever.applicationListenerBeans.add(listenerBeanName);
 			this.retrieverCache.clear();
 		}
@@ -124,8 +137,11 @@ public abstract class AbstractApplicationEventMulticaster
 
 	@Override
 	public void removeApplicationListener(ApplicationListener<?> listener) {
+		//锁定监听器助手对象
 		synchronized (this.defaultRetriever) {
+			//删除监听器对象集合中的指定元素
 			this.defaultRetriever.applicationListeners.remove(listener);
+			//清空监听器助手缓存map
 			this.retrieverCache.clear();
 		}
 	}
@@ -481,17 +497,20 @@ public abstract class AbstractApplicationEventMulticaster
 
 	/**
 	 * Helper class that encapsulates a general set of target listeners.
+	 * 监听器助手类，封装一组特定目标监听器的帮助类，允许有效的检索预过滤的监听器，此类的实例按照事件类型和源类型缓存
 	 */
 	private class DefaultListenerRetriever {
-
+		//存放应用程序时间监听器，有序，不可重复
 		public final Set<ApplicationListener<?>> applicationListeners = new LinkedHashSet<>();
-
+		//存放应用程序时间监听器bean名称，有序，不可重复
 		public final Set<String> applicationListenerBeans = new LinkedHashSet<>();
-
+		//获取应用程序的时间监听器
 		public Collection<ApplicationListener<?>> getApplicationListeners() {
+			//创建一个指定大小的ApplicationListener监听器list集合
 			List<ApplicationListener<?>> allListeners = new ArrayList<>(
 					this.applicationListeners.size() + this.applicationListenerBeans.size());
 			allListeners.addAll(this.applicationListeners);
+			//如果存放监听器bean name集合不为空
 			if (!this.applicationListenerBeans.isEmpty()) {
 				BeanFactory beanFactory = getBeanFactory();
 				for (String listenerBeanName : this.applicationListenerBeans) {
