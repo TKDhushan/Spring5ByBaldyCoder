@@ -407,11 +407,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		Assert.notNull(event, "Event must not be null");
 
 		// Decorate event as an ApplicationEvent if necessary
+		//如果有必要，将事件装饰为applicationEvent
 		ApplicationEvent applicationEvent;
 		if (event instanceof ApplicationEvent) {
 			applicationEvent = (ApplicationEvent) event;
 		}
 		else {
+			//如果不是事件，就转为事件
 			applicationEvent = new PayloadApplicationEvent<>(this, event, eventType);
 			if (eventType == null) {
 				eventType = ((PayloadApplicationEvent<?>) applicationEvent).getResolvableType();
@@ -419,14 +421,17 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Multicast right now if possible - or lazily once the multicaster is initialized
+		//如果可能，立即执行多播或者一旦初始化多播器就进入懒惰状态
 		if (this.earlyApplicationEvents != null) {
 			this.earlyApplicationEvents.add(applicationEvent);
 		}
 		else {
+			//获取事件广播器，发布事件
 			getApplicationEventMulticaster().multicastEvent(applicationEvent, eventType);
 		}
 
 		// Publish event via parent context as well...
+		//如果存在父容器，那么父容器也发布事件
 		if (this.parent != null) {
 			if (this.parent instanceof AbstractApplicationContext) {
 				((AbstractApplicationContext) this.parent).publishEvent(event, eventType);
@@ -1119,9 +1124,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		initLifecycleProcessor();
 
 		// Propagate refresh to lifecycle processor first.
+		//传播刷新生命周期处理器
 		getLifecycleProcessor().onRefresh();
 
 		// Publish the final event.
+		//发布事件 事件源是AbstractApplicationContext
 		publishEvent(new ContextRefreshedEvent(this));
 	}
 
