@@ -82,6 +82,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 			@Nullable Constructor<?> ctor, Object... args) {
 
 		// Must generate CGLIB subclass...
+		//必须生成一个cglib的子类
 		return new CglibSubclassCreator(bd, owner).instantiate(ctor, args);
 	}
 
@@ -91,7 +92,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 	 * in Spring versions earlier than 3.2.
 	 */
 	private static class CglibSubclassCreator {
-
+		// 此处定义了一个回调类型的数组，后面MethodOverrideCallbackFilter通过指定下标获取对应的拦截
 		private static final Class<?>[] CALLBACK_TYPES = new Class<?>[]
 				{NoOp.class, LookupOverrideMethodInterceptor.class, ReplaceOverrideMethodInterceptor.class};
 
@@ -114,14 +115,26 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 		 * @return new instance of the dynamically generated subclass
 		 */
 		public Object instantiate(@Nullable Constructor<?> ctor, Object... args) {
+			/**
+			 * cglib实现动态代理的步骤
+			 * 1、创建Enhancer
+			 * 2、设置Enhancer对象的父类
+			 * 3、设置Enhancer对象的回调函数
+			 * 4、创建代理对象
+			 * 5、通过代理对象调用目标方法
+			 */
+			//根据beanDefinition来创建一个cglib的子类
 			Class<?> subclass = createEnhancedSubclass(this.beanDefinition);
 			Object instance;
+			//如果构造器等于空，那么直接通过反射来实例化对象
 			if (ctor == null) {
 				instance = BeanUtils.instantiateClass(subclass);
 			}
 			else {
 				try {
+					//通过cglib对象来根据参数类型获取对象的构造器
 					Constructor<?> enhancedSubclassConstructor = subclass.getConstructor(ctor.getParameterTypes());
+					//通过构造器来获取对象
 					instance = enhancedSubclassConstructor.newInstance(args);
 				}
 				catch (Exception ex) {
@@ -143,6 +156,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 		 * definition, using CGLIB.
 		 */
 		private Class<?> createEnhancedSubclass(RootBeanDefinition beanDefinition) {
+			//cglib规定用法，对原始class进行增量，并设置callback
 			Enhancer enhancer = new Enhancer();
 			enhancer.setSuperclass(beanDefinition.getBeanClass());
 			enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
