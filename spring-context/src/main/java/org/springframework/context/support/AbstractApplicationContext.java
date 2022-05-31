@@ -1106,7 +1106,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// Instantiate all remaining (non-lazy-init) singletons.
 		//对配置了lazy-init属性的单例模式的Bean进行预实例化处理 ,初始化剩下的单实例(非惰性的)
-		//****核心方法
+		/**
+		 * BeanDefinitionMap会和singletonObject里面已经实例化好的对象作对比，不会重复初始化
+		 */
+		//****核心方法****
 		beanFactory.preInstantiateSingletons();
 	}
 
