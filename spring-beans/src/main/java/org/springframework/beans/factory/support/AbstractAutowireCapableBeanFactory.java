@@ -1134,9 +1134,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	@Nullable
 	protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) {
 		Object bean = null;
+		// 如果beforeInstantiationResolved值为null或者true。那么标识尚未被处理，进行后续的处理
 		if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
 			// Make sure bean class is actually resolved at this point.
+			//确认beanclass确实在此处进行处理
+			//判断当前mbd是否是合成的，只有再显示aop的时候synthetic的值才为true，并且是否shixianleINstantiationAwareBeanPostProcessor接口
 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
+				//获取类型
 				Class<?> targetType = determineTargetType(beanName, mbd);
 				if (targetType != null) {
 					bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
@@ -1145,6 +1149,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					}
 				}
 			}
+			//是否解析了
 			mbd.beforeInstantiationResolved = (bean != null);
 		}
 		return bean;
