@@ -12,6 +12,7 @@ import org.springframework.demo.custom.editor.People;
 import org.springframework.demo.entity.MyEntity;
 import org.springframework.demo.entity.Person;
 import org.springframework.demo.entity.User;
+import org.springframework.demo.factoryMethod.Student;
 import org.springframework.demo.override.MyClassPathXmlApplicationContext;
 import org.springframework.demo.tag.MLX;
 
@@ -33,6 +34,18 @@ import java.util.stream.Stream;
  */
 
 public class MyTest {
+	/**
+	 * 测试静态工厂，非静态工厂。debug跟交易
+	 */
+	@Test
+	void factoryMethodTest(){
+		BeanFactory beanFactory = new ClassPathXmlApplicationContext("META-INF/spring.xml");
+		Student student = beanFactory.getBean("student", Student.class);
+		System.out.println(student);
+		Student student2 = beanFactory.getBean("student2", Student.class);
+		System.out.println(student2);
+	}
+
 	@Test
 	void componentParseTest(){
 		BeanFactory beanFactory = new ClassPathXmlApplicationContext("META-INF/spring.xml");

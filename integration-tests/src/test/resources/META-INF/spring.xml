@@ -31,6 +31,15 @@
 	</bean>
 	<!-- 自定义属性解析器 end -->
 
+	<!--工厂方法创建   begin-->
+	<bean id="student" class="org.springframework.demo.factoryMethod.StudentStaticFactory" factory-method="getStudent">
+		<constructor-arg value="啊哈哈哈哈哈"></constructor-arg>
+	</bean>
+	<bean id="studentInstanceFactory" class="org.springframework.demo.factoryMethod.StudentInstanceFactory"></bean>
+	<bean id="student2" class="org.springframework.demo.factoryMethod.Student" factory-bean="studentInstanceFactory" factory-method="getStudent">
+		<constructor-arg value="叮当叮当"></constructor-arg>
+	</bean>
+	<!--工厂方法创建   begin-->
 
 	<!-- 循环引用 begin-->
 <!--	<bean id="a" class="org.springframework.demo.entity.A" scope="singleton">-->
