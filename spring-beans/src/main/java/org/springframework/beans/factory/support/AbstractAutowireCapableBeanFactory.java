@@ -1207,24 +1207,32 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		//如果工厂方法不为空则使用工厂方法初始化策略，refresh方法在bd处理时引用的策略：如cglib
 		if (mbd.getFactoryMethodName() != null) {
 			return instantiateUsingFactoryMethod(beanName, mbd, args);
+			//使用构造器创建实例后，Spring会将解析过后确定下来的构造器或工厂方法保存在缓存中，避免重复解析
 		}
 
 		// Shortcut when re-creating the same bean...
 		//一个类可以有多个构造器，搜索一SPring得根据参数个数、类型确定需要调用的构造器
 		//在使用构造器创建实例后，Spring会将解析过后确定下来的构造器或工厂方法保存在缓存中，避免在此创建相同bean时再次解析
-		boolean resolved = false;
+		boolean resolved = false;//标记，防止重复创建
+		//是否需要自动装配
 		boolean autowireNecessary = false;
 		if (args == null) {
 			synchronized (mbd.constructorArgumentLock) {
-				//一个类中有多个构造函数，每个构造函数都有不同的参数，所以调用前需要根据参数锁定构造函数或对应的工厂方法
+				//一个类中有多个构造函数，每个构造函数都有不同的参数，所以调用前需要根据配置文件中的参数锁定构造函数或对应的工厂方法
+				/**
+				 * 判断过程
+				 * 1、Spring会将解析过后确定好的构造函数缓存到BeanDefinition中的resolvedConstructorOrFactoryMethod字段中
+				 * 1、下次创建相同的对象时，直接从RootBeanDefinition中的属性resolvedConstructorOrFactoryMethod缓存的值获取，避免再次解析
+				 */
 				if (mbd.resolvedConstructorOrFactoryMethod != null) {
 					resolved = true;
 					autowireNecessary = mbd.constructorArgumentsResolved;
 				}
 			}
 		}
-		//如果已经解析过则使用解析好的构造函数方法，不需要再次锁定
+		//如果已经解析过，有存量的构造或者工厂方法，则使用解析好的构造函数方法，不需要再次锁定
 		if (resolved) {
+			//构造器有参数
 			if (autowireNecessary) {
 				//构造函数自动注入
 				return autowireConstructor(beanName, mbd, null, null);
@@ -1236,8 +1244,15 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Candidate constructors for autowiring?
-		//需要根据参数解析构造函数
+		//从bean后置处理器中为自动装配寻找构造方法，有且仅有一个有参构造或者有且仅有@Autowired注解构造需要根据参数解析构造函数
 		Constructor<?>[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
+		/**
+		 * 以下条件符合其一即可进入
+		 * 1、存在构造方法
+		 * 2、自动装配模型为构造函数自动装配
+		 * 3、给BeanDefinition中设置了构造参数值
+		 * 4、有参与构造函数参数列表的参数
+		 */
 		if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||
 				mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args)) {
 			//构造函数自动注入
