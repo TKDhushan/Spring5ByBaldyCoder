@@ -192,6 +192,7 @@ public abstract class AnnotationConfigUtils {
 				def.getPropertyValues().add("initAnnotationType", classLoader.loadClass("javax.annotation.PostConstruct"));
 				def.getPropertyValues().add("destroyAnnotationType", classLoader.loadClass("javax.annotation.PreDestroy"));
 				def.setSource(source);
+				//注册BeanDefinition到注册表中
 				beanDefs.add(registerPostProcessor(registry, def, JSR250_ANNOTATION_PROCESSOR_BEAN_NAME));
 			}
 			catch (ClassNotFoundException ex) {
