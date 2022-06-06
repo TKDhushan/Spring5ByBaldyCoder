@@ -114,6 +114,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 		 * Ignored if the {@code ctor} parameter is {@code null}.
 		 * @return new instance of the dynamically generated subclass
 		 */
+		//实例化入口，动态构造子类
 		public Object instantiate(@Nullable Constructor<?> ctor, Object... args) {
 			/**
 			 * cglib实现动态代理的步骤

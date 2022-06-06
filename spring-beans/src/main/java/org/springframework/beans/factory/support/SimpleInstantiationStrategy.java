@@ -77,6 +77,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					try {
 						//获取默认的无参构造函器
 						constructorToUse = clazz.getDeclaredConstructor();
+						//获取构造器后，将构造器赋值给bd中的属性
 						bd.resolvedConstructorOrFactoryMethod = constructorToUse;
 					}
 					catch (Throwable ex) {

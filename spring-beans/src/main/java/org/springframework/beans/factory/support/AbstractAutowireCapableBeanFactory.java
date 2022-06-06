@@ -1268,7 +1268,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// No special handling: simply use no-arg constructor.
-		//使用默认构造函数构造
+		//使用默认无参构造函数创建对象，如果没有无参构造且存在多个有参构造且没有@AutoWired注解构造，会报错
 		return instantiateBean(beanName, mbd);
 	}
 
@@ -1280,6 +1280,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @since 5.0
 	 * @see #getObjectForBeanInstance
 	 */
+	//从supplier获取bean
 	protected BeanWrapper obtainFromSupplier(Supplier<?> supplier, String beanName) {
 		Object instance = obtainInstanceFromSupplier(supplier, beanName);
 		if (instance == null) {
