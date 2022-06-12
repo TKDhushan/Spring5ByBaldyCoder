@@ -1382,7 +1382,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					else {
 						//否则，将bd作为参数，构建一个RootBeanDefinition
 						//正常使用下，BeanDefinition在被加载后是GenericBeanDefinition或ScannedGenericBeanDefiniton
-						mbd = new RootBeanDefinition(bd);
+						mbd = new RootBeanDefinition(bd);//父类abstractBeanDefinition才是核心处理
 					}
 				}
 				else {

@@ -223,7 +223,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 			try {
 				//调用DefaultResourceLoader的getResource完成局答题的Resource定位
 				Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
-				int count = loadBeanDefinitions(resources);
+				int count = loadBeanDefinitions(resources);//重载：由string->resource[]
 				if (actualResources != null) {
 					Collections.addAll(actualResources, resources);
 				}

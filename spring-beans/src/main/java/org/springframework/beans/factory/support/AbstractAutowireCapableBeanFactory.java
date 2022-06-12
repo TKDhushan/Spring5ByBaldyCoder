@@ -541,7 +541,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		try {
-			//实际创建bean的低啊用
+			//实际创建bean的调用
 			Object beanInstance = doCreateBean(beanName, mbdToUse, args);
 			if (logger.isTraceEnabled()) {
 				logger.trace("Finished creating instance of bean '" + beanName + "'");
@@ -1211,7 +1211,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Shortcut when re-creating the same bean...
-		//一个类可以有多个构造器，搜索一SPring得根据参数个数、类型确定需要调用的构造器
+		//一个类可以有多个构造器，搜索一Spring得根据参数个数、类型确定需要调用的构造器
 		//在使用构造器创建实例后，Spring会将解析过后确定下来的构造器或工厂方法保存在缓存中，避免在此创建相同bean时再次解析
 		boolean resolved = false;//标记，防止重复创建
 		//是否需要自动装配

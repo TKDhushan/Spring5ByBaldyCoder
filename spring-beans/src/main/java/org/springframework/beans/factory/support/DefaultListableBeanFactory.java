@@ -551,13 +551,13 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			// Only consider bean as eligible if the bean name is not defined as alias for some other bean.
 			if (!isAlias(beanName)) {
 				try {
-					RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
+					RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);//没有就创建一个核心代码在RootBeanDefinition的父类
 					// Only check bean definition if it is complete.
 					if (!mbd.isAbstract() && (allowEagerInit ||
 							(mbd.hasBeanClass() || !mbd.isLazyInit() || isAllowEagerClassLoading()) &&
 									!requiresEagerInitForType(mbd.getFactoryBeanName()))) {
-						boolean isFactoryBean = isFactoryBean(beanName, mbd);
-						BeanDefinitionHolder dbd = mbd.getDecoratedDefinition();
+						boolean isFactoryBean = isFactoryBean(beanName, mbd);//判断是否是factorybean
+						BeanDefinitionHolder dbd = mbd.getDecoratedDefinition();//对bd的封装
 						boolean matchFound = false;
 						boolean allowFactoryBeanInit = (allowEagerInit || containsSingleton(beanName));
 						boolean isNonLazyDecorated = (dbd != null && !mbd.isLazyInit());

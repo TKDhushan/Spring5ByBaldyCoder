@@ -320,12 +320,12 @@ public class BeanDefinitionParserDelegate {
 	 */
 	protected void populateDefaults(DocumentDefaultsDefinition defaults, @Nullable DocumentDefaultsDefinition parentDefaults, Element root) {
 		String lazyInit = root.getAttribute(DEFAULT_LAZY_INIT_ATTRIBUTE);//Element的getAttribute如果没有值，那么默认返回default？
-		if (isDefaultValue(lazyInit)) {
+		if (isDefaultValue(lazyInit)) {//没有默认返回true
 			// Potentially inherited from outer <beans> sections, otherwise falling back to false.
 			lazyInit = (parentDefaults != null ? parentDefaults.getLazyInit() : FALSE_VALUE);//没有配置优先取父节点，父节点没有则default对应FALSE
 		}
 		defaults.setLazyInit(lazyInit);
-		//处理default-merge 属性
+		//处理default-merge 属性 ?没有找到这个属性，返回了默认的default，但查abc返回的""？？
 		String merge = root.getAttribute(DEFAULT_MERGE_ATTRIBUTE);
 		if (isDefaultValue(merge)) {
 			// Potentially inherited from outer <beans> sections, otherwise falling back to false.

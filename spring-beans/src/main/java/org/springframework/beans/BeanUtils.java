@@ -138,7 +138,7 @@ public abstract class BeanUtils {
 		}
 		Constructor<T> ctor;
 		try {
-			ctor = clazz.getDeclaredConstructor();
+			ctor = clazz.getDeclaredConstructor();//获取构造方法
 		}
 		catch (NoSuchMethodException ex) {
 			ctor = findPrimaryConstructor(clazz);
@@ -186,8 +186,8 @@ public abstract class BeanUtils {
 	public static <T> T instantiateClass(Constructor<T> ctor, Object... args) throws BeanInstantiationException {
 		Assert.notNull(ctor, "Constructor must not be null");
 		try {
-			ReflectionUtils.makeAccessible(ctor);
-			if (KotlinDetector.isKotlinReflectPresent() && KotlinDetector.isKotlinType(ctor.getDeclaringClass())) {
+			ReflectionUtils.makeAccessible(ctor);//防止构造函数为private
+			if (KotlinDetector.isKotlinReflectPresent() && KotlinDetector.isKotlinType(ctor.getDeclaringClass())) {//java不进入此段
 				return KotlinDelegate.instantiateClass(ctor, args);
 			}
 			else {
